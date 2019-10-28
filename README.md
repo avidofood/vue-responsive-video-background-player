@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/npm/l/vue-responsive-video-background-player.svg" alt="License">
 </a>
 
-![Laravel Tongue](demo/public/images/roadster.png)
+![Laravel Tongue](https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/roadster.png)
 
 **If you are looking to play videos in the background, you have found the best Vue package for it 😜 (Currently no YouTube videos)**
 
@@ -67,6 +67,10 @@
     <h1 style="color: white;">Hallo welcome!</h1>
 </video-background>
 ```
+
+### Demo ⚡️
+
+https://avidofood.github.io/vue-responsive-video-background-player/
 
 ## Props
 
