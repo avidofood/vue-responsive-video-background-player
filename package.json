@@ -1,12 +1,14 @@
 {
   "name": "vue-responsive-video-background-player",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Play your own videos in background responsively",
-  "main": "./src/index.js",
+  "main": "dist/index.common.js",
+  "unpkg": "dist/index.umd.min.js",
   "private": false,
   "scripts": {
-    "prod": "npm run production",
-    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    "demo": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "build": "vue-cli-service build",
+    "build-bundle": "vue-cli-service build --target lib --name index ./src/index.js"
   },
   "files": [
     "dist/*",
@@ -38,6 +40,8 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.0.5",
+    "@vue/cli-service": "^4.0.5",
     "cross-env": "^6.0.3",
     "eslint": "^6.6.0",
     "eslint-config-avidofood": "^1.0.4",

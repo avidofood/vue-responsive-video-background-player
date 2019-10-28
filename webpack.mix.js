@@ -1,8 +1,7 @@
 const mix = require('laravel-mix');
 
 /**
- * Currently, I don't how to create the dist folder, because it just does not work...
- * All users using this package are going to use the uncompiled src folder.
+ * Somehow I cannot use Laravel mix to create the dist folder. So I'm just using it for the demo.
  * This here is just for the demo
  */
 mix.js('demo/resources/js/app.js', 'demo/public/js/app.js');
