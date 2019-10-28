@@ -1,0 +1,49 @@
+{
+  "name": "vue-responsive-video-background-player",
+  "version": "1.0.0",
+  "description": "Play your own videos in background responsively",
+  "main": "./src/index.js",
+  "private": false,
+  "scripts": {
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "files": [
+    "dist/*",
+    "src/*",
+    "*.json",
+    "*.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/avidofood/vue-responsive-video-background-player.git"
+  },
+  "keywords": [
+    "vue",
+    "background",
+    "video background player",
+    "vue-responsive-videobg",
+    "vue-video-player",
+    "vue video player",
+    "video player",
+    "vue player",
+    "vue video",
+    "resolution switcher",
+    "tesla"
+  ],
+  "author": {
+    "name": "Philipp Mochine",
+    "email": "support@avidofood.com",
+    "url": "https://avidofood.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^6.0.3",
+    "eslint": "^6.6.0",
+    "eslint-config-avidofood": "^1.0.4",
+    "laravel-mix": "^5.0.0",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "dependencies": {}
+}

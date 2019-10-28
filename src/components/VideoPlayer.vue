@@ -1,0 +1,142 @@
+<template>
+    <transition name="fade">
+        <div
+            class="video-wrapper"
+            v-show="showVideo"
+        >
+            <video
+                ref="video"
+                playsinline
+                :muted="muted"
+                :loop="loop"
+                :preload="preload"
+                :style="styleObject"
+            >
+                <source
+                    :src="src"
+                    :type="getMediaType(src)"
+                >
+            </video>
+        </div>
+    </transition>
+</template>
+
+
+<script>
+import props from '../core/playerProps';
+
+export default {
+    props,
+    data() {
+        return {
+            showVideo: false,
+        };
+    },
+    computed: {
+        styleObject() {
+            if (!this.objectFit) {
+                return {};
+            }
+            return {
+                objectFit: this.objectFit,
+            };
+        },
+    },
+    watch: {
+        src() {
+            this.load();
+        },
+    },
+    methods: {
+        load() {
+            this.hide();
+            // ugly, but we want to give hide 1 sec pause until we load the next video
+            setTimeout(() => {
+                this.$refs.video.load();
+                this.$emit('loading');
+            }, 1000);
+        },
+        play() {
+            this.$refs.video.play();
+            this.show();
+            this.$emit('playing');
+        },
+        show() {
+            this.showVideo = true;
+        },
+        hide() {
+            this.showVideo = false;
+        },
+        getMediaType(src) {
+            return `video/${src.split('.').pop()}`;
+        },
+        videoCanPlay() {
+            return !!this.$refs.video.canPlayType;
+        },
+        videoReady() {
+            this.$emit('ready');
+        },
+        videoError() {
+            this.$emit('error');
+        },
+        videoEnded() {
+            this.$emit('ended');
+        },
+    },
+    mounted() {
+        if (this.videoCanPlay()) {
+            this.$refs.video.addEventListener('canplay', this.videoReady);
+            this.$refs.video.addEventListener('error', this.videoError);
+            this.$refs.video.addEventListener('ended', this.videoEnded);
+        }
+    },
+
+    beforeDestroy() {
+        this.$refs.video.removeEventListener('canplay', this.videoReady);
+        this.$refs.video.removeEventListener('error', this.videoError);
+        this.$refs.video.removeEventListener('ended', this.videoEnded);
+    },
+};
+</script>
+
+
+<style scoped>
+    .video-wrapper{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        position: absolute;
+        height: 100%;
+        position: absolute;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .fade{
+        backface-visibility: hidden;
+    }
+    .fade-enter-active{
+        transition: opacity 1s;
+    }
+    .fade-leave-active{
+        transition: opacity 1s;
+    }
+
+    .fade-enter{
+        opacity: 0;
+    }
+    .fade-leave-to{
+        opacity: 0;
+    }
+    video {
+        visibility: visible;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 100%;
+        width: 100%;
+    }
+</style>
