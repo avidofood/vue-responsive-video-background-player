@@ -6,6 +6,7 @@
         >
             <video
                 ref="video"
+                autoplay
                 playsinline
                 :muted="muted"
                 :loop="loop"
@@ -48,6 +49,9 @@ export default {
         },
     },
     methods: {
+        pause() {
+            this.$refs.video.pause();
+        },
         load() {
             this.hide();
             // ugly, but we want to give hide 1 sec pause until we load the next video
@@ -74,6 +78,9 @@ export default {
             return !!this.$refs.video.canPlayType;
         },
         videoReady() {
+            // Unfortunately we have the iOS bug, that we need to set autoplay always to true.
+            // That means we need to first pause the video, and later check if we want to autoplay or not
+            this.pause();
             this.$emit('ready');
         },
         videoError() {
