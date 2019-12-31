@@ -123,6 +123,10 @@ https://www.w3schools.com/tags/att_video_preload.asp
 
 So the video fits perfectly in the container
 
+- `playsWhen` (default: `canplay`)
+
+This is important, if you know that you might have users with bad internet speed, you should definetly use `canplaythrough`. Learn more in [video events](https://www.w3schools.com/tags/ref_av_dom.asp).
+
 ## Events 
 
 - `ready`: Video is loaded

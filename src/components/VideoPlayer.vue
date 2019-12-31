@@ -92,7 +92,7 @@ export default {
     },
     mounted() {
         if (this.videoCanPlay()) {
-            this.$refs.video.oncanplay = this.videoReady;
+            this.$refs.video[`on${this.playsWhen}`] = this.videoReady;
             this.$refs.video.onerror = this.videoError;
             this.$refs.video.onended = this.videoEnded;
         }

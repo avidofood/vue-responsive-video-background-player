@@ -19,4 +19,9 @@ export default {
         type: String,
         default: 'cover',
     },
+    playsWhen: {
+        type: String,
+        default: 'canplay',
+        note: 'Google HTML Video Events',
+    },
 };
