@@ -15,6 +15,7 @@
             :muted="muted"
             :loop="loop"
             :preload="preload"
+            :plays-when="playsWhen"
             @ready="playVideo"
             @playing="$emit('playing')"
             @error="$emit('error')"
