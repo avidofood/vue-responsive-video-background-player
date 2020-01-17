@@ -102,7 +102,7 @@ To make it work you need at least `src, res, autoplay`.
 
 - `autoplay` (default: `true`)
 
-The video is going to be played immediately when the video is ready. If you are setting it to false, you can start the video just by `this.$refs.videobackground.player.play()`. But remember to set `ref=videobackground` to the html tag `<video-background>`, so that it can work.
+The video is going to be played immediately when the video is ready. If you are setting it to false, you can start the video just by `this.$refs.videobackground.player.play()`. But remember to set `ref=videobackground` to the HTML tag `<video-background>`, so that it can work.
 
 - `overlay` (default: `''`)
 If you love overlays, then copy the overlay from the advanced example.
@@ -134,6 +134,16 @@ This is important, if you know that you might have users with bad internet speed
 - `error`: Video error
 - `loading`: Video is loading
 - `ended`: Video finished, only when `loop` is set to false
+
+## Methods
+
+If you happen to need more control over the player, you can use the internal methods. For that, you need to set `ref=videobackground` to the HTML tag `<video-background>`. After that you can call all methods like this `this.$refs.videobackground.player.play()`.
+
+- `play()`: Video is playing
+- `pause()`: Video is paused
+- `show()`: Video is shown
+- `hide()`: Video is hidden, the poster is shown
+- `load()`: Video is loaded
 
  
 ## Security
