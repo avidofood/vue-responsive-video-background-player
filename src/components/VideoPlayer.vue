@@ -50,7 +50,7 @@ export default {
     },
     methods: {
         pause() {
-            this.$refs.video.pause();
+            this.$refs.video && this.$refs.video.pause();
         },
         load() {
             this.hide();
