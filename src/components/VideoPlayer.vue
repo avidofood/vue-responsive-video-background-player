@@ -63,6 +63,7 @@ export default {
             }, 1000);
         },
         play() {
+            this.setPlaybackRate();
             this.$refs.video.play();
             this.show();
             this.$emit('playing');
@@ -90,6 +91,10 @@ export default {
         },
         videoEnded() {
             this.$emit('ended');
+        },
+        setPlaybackRate() {
+            this.$refs.video.playbackRate = this.playbackRate;
+            this.$refs.video.defaultPlaybackRate = this.playbackRate;
         },
     },
     mounted() {

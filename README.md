@@ -127,6 +127,10 @@ So the video fits perfectly in the container
 
 This is important, if you know that you might have users with bad internet speed, you should definetly use `canplaythrough`. Learn more in [video events](https://www.w3schools.com/tags/ref_av_dom.asp).
 
+- `playbackRate` (default: `1.0`)
+  
+The playbackRate property sets the current playback speed of the video. [Example](https://www.w3schools.com/jsref/prop_video_playbackrate.asp) but negative values didn't work for me?
+
 ## Events 
 
 - `ready`: Video is loaded

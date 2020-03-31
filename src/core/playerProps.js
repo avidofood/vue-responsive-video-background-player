@@ -24,4 +24,8 @@ export default {
         default: 'canplay',
         note: 'Google HTML Video Events',
     },
+    playbackRate: {
+        type: Number,
+        default: 1.0,
+    },
 };
