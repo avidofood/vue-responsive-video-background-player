@@ -75,7 +75,7 @@ export default {
             this.showVideo = false;
         },
         getMediaType(src) {
-            return `video/${src.split('.').pop()}`;
+            return `video/${src.split('.').pop().split(/[?#]/)[0]}`;
         },
         videoCanPlay() {
             return !!this.$refs.video.canPlayType;
