@@ -1,4 +1,4 @@
-# Responive Video Background Player for Vue ⚡️
+# Responsive Video Background Player for Vue ⚡️
 
 <a href="https://www.npmjs.com/package/vue-responsive-video-background-player">
   <img src="https://img.shields.io/npm/dt/vue-responsive-video-background-player.svg" alt="Downloads">
