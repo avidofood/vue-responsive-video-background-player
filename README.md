@@ -37,6 +37,23 @@
  Vue.use(Plugin);
 ```
 
+### (3: Only for Nuxt.js users)
+ >Thanks to [@skoulix](https://github.com/avidofood/vue-responsive-video-background-player/issues/8#issuecomment-654821213) for his instructions:
+
+  Again this is only for Nuxt.js users. Gridsome users click [here](https://gridsome.org/docs/assets-scripts/#without-ssr-support). At your `nuxt.config.js` locate the part where you declare your plugins and import the file. Example: 
+
+```
+plugins: [
+  {
+    src: '~/plugins/vue-video-background',
+    ssr: false
+  }
+]
+```
+
+Now the component is globally available and can be used at any .vue file without issues.
+
+
 ## Usage - (or to make it runnable 🏃‍♂️)
 
 
