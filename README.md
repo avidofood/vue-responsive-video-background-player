@@ -14,7 +14,7 @@
 
 **If you are looking to play videos in the background, you have found the best Vue package for it 😜 (Currently no YouTube videos)**
 
- >***Prerequisites**: Vue 2.x.x
+ >**Prerequisites**: Vue 2.x.x
 
 ## Installation in 2 Steps
 
@@ -99,9 +99,14 @@ This package is for responsive videos depicting different video resolution. Have
 
 This is your path to your video. You can just use this value for showing your video in every resolution.
 
+ >⚠️**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: `:src="require(`@/assets/video/timelapse.mp4`)"`. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
+
+
 - `poster` (default: `''`)
 
 This is your first background image that is shown before the video is loaded.
+
+ >⚠️**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: `:src="require(`@/assets/img/logo.png`)"`. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
 
 - `sources` (default: `[]`)
 
