@@ -22,7 +22,6 @@
     </transition>
 </template>
 
-
 <script>
 import props from '../core/playerProps';
 
@@ -82,7 +81,8 @@ export default {
         },
         videoReady() {
             // Unfortunately we have the iOS bug, that we need to set autoplay always to true.
-            // That means we need to first pause the video, and later check if we want to autoplay or not
+            // That means we need to first pause the video,
+            // and later check if we want to autoplay or not
             this.pause();
             this.$emit('ready');
         },
@@ -106,7 +106,6 @@ export default {
     },
 };
 </script>
-
 
 <style scoped>
     .video-wrapper{

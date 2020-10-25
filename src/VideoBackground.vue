@@ -8,7 +8,6 @@
             :poster="current.poster || poster"
         />
 
-
         <video-player
             ref="player"
             :src="current.src"
@@ -24,7 +23,6 @@
             @ended="$emit('ended')"
         />
 
-
         <video-overlay
             v-if="overlay"
             :overlay="overlay"
@@ -36,12 +34,11 @@
     </section>
 </template>
 
-
 <script>
 import props from './core/props';
-import VideoPlayer from './components/VideoPlayer';
-import VideoPoster from './components/VideoPoster';
-import VideoOverlay from './components/VideoOverlay';
+import VideoPlayer from './components/VideoPlayer.vue';
+import VideoPoster from './components/VideoPoster.vue';
+import VideoOverlay from './components/VideoOverlay.vue';
 
 import resize from './core/resize';
 
@@ -67,7 +64,6 @@ export default {
     },
 };
 </script>
-
 
 <style scoped>
 	.vue-responsive-videobg{

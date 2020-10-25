@@ -39,7 +39,6 @@ const containsProp = (array, propName) => {
     return false;
 };
 
-
 const isObject = (obj) => obj != null && obj.constructor.name === 'Object';
 
 const exists = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
