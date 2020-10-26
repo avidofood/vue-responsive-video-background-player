@@ -1,8 +1,8 @@
 import component from './VideoBackground.vue';
 
 export const Plugin = {
-    install(Vue) {
-        Vue.component('VideoBackground', component);
+    install(app) {
+        app.component('VideoBackground', component);
     },
 };
 

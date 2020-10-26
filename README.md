@@ -1,4 +1,4 @@
-# Responsive Video Background Player for Vue ⚡️
+# Responsive Video Background Player for Vue 2 and Vue 3 ⚡️
 
 <a href="https://www.npmjs.com/package/vue-responsive-video-background-player">
   <img src="https://img.shields.io/npm/dt/vue-responsive-video-background-player.svg" alt="Downloads">
@@ -14,12 +14,16 @@
 
 **If you are looking to play videos in the background, you have found the best Vue package for it 😜 (Currently no YouTube videos)**
 
- >**Prerequisites**: Vue 2.x.x
+ >**Prerequisites**: Vue 2.x.x or Vue 3.x.x
 
 ## Installation in 2 Steps
 
 ### 1: Add with npm 💻
 ```bash
+ # For Vue 2.x.x
+ npm install vue-responsive-video-background-player@1.1.4
+
+# For Vue 3.x.x
  npm install vue-responsive-video-background-player
 ```
 

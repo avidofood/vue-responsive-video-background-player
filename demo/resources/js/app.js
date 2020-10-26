@@ -1,9 +1,8 @@
-
-import Vue from 'vue';
+import { createApp } from 'vue';
 import VideoBackground from '../../../src/index';
 
-Vue.component('video-background', VideoBackground);
+const app = createApp({});
 
-new Vue({ // eslint-disable-line no-new
-    el: '#app',
-});
+app.component('VideoBackground', VideoBackground);
+
+app.mount('#app');
