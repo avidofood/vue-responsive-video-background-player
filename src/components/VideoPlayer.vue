@@ -27,6 +27,7 @@ import props from '../core/playerProps';
 
 export default {
     props,
+    emits: ['playing', 'error', 'loading', 'ended', 'ready'],
     data() {
         return {
             showVideo: false,

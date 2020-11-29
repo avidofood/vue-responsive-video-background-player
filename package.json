@@ -43,18 +43,17 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/webpack-env": "^1.15.3",
-    "@vue/cli-plugin-babel": "^4.5.8",
-    "@vue/cli-service": "^4.5.8",
-    "@vue/compiler-sfc": "^3.0.2",
+    "@types/webpack-env": "^1.16.0",
+    "@vue/cli-plugin-babel": "^4.5.9",
+    "@vue/cli-service": "^4.5.9",
+    "@vue/compiler-sfc": "^3.0.3",
     "cross-env": "^7.0.2",
-    "eslint": "^7.12.0",
+    "eslint": "^7.14.0",
     "eslint-config-avidofood": "^2.0.2",
-    "laravel-mix": "^5.0.7",
+    "laravel-mix": "^5.0.9",
     "laravel-mix-vue3": "^0.7.0",
-    "vue": "^3.0.0",
+    "vue": "^3.0.3",
     "vue-loader": "^16.0.0-beta.8",
     "vue-template-compiler": "^2.6.12"
-  },
-  "dependencies": {}
+  }
 }
