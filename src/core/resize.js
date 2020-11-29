@@ -49,7 +49,7 @@ export default {
     mounted() {
         window.addEventListener('resize', throttle(this.$_change_video_resolution, 250));
     },
-    beforeDestroy() {
+    beforeUnmount() {
         window.removeEventListener('resize', throttle(this.$_change_video_resolution, 250));
     },
 };

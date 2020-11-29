@@ -4109,7 +4109,7 @@ var es_array_sort = __webpack_require__("4e82");
   mounted: function mounted() {
     window.addEventListener('resize', throttle(this.$_change_video_resolution, 250));
   },
-  beforeDestroy: function beforeDestroy() {
+  beforeUnmount: function beforeUnmount() {
     window.removeEventListener('resize', throttle(this.$_change_video_resolution, 250));
   }
 });
