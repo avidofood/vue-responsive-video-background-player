@@ -28,4 +28,8 @@ export default {
         type: Number,
         default: 1.0,
     },
+    transition: {
+        type: String,
+        default: 'fade',
+    },
 };

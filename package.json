@@ -1,6 +1,6 @@
 {
   "name": "vue-responsive-video-background-player",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Play your own videos in background responsively",
   "main": "dist/index.common.js",
   "unpkg": "dist/index.umd.min.js",
@@ -53,7 +53,7 @@
     "laravel-mix": "^5.0.9",
     "laravel-mix-vue3": "^0.7.0",
     "vue": "^3.0.3",
-    "vue-loader": "^16.0.0-beta.8",
+    "vue-loader": "^16.1.0",
     "vue-template-compiler": "^2.6.12"
   },
   "release": {
