@@ -1,5 +1,5 @@
 <template>
-    <transition name="fade">
+    <transition :name="transition">
         <div
             class="video-wrapper"
             v-show="showVideo"

@@ -16,6 +16,7 @@
             :preload="preload"
             :plays-when="playsWhen"
             :playback-rate="playbackRate"
+            :transition="transition"
             @ready="playVideo"
             @playing="$emit('playing')"
             @error="$emit('error')"
