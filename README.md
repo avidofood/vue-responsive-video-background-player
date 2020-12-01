@@ -157,6 +157,10 @@ This is important, if you know that you might have users with bad internet speed
   
 The playbackRate property sets the current playback speed of the video. [Example](https://www.w3schools.com/jsref/prop_video_playbackrate.asp) but negative values didn't work for me?
 
+- `transition` (default: `fade`)
+  
+You can add your own transition styles here. If you set it to empty string, it won't show any transitions.
+
 ## Events 
 
 - `ready`: Video is loaded
