@@ -45,7 +45,6 @@ import resize from './core/resize';
 export default {
     props,
     mixins: [resize],
-    emits: ['playing', 'error', 'loading', 'ended', 'ready'],
     components: {
         VideoPlayer,
         VideoPoster,
