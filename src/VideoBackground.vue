@@ -17,6 +17,7 @@
             :plays-when="playsWhen"
             :playback-rate="playbackRate"
             :transition="transition"
+            :object-fit="objectFit"
             @ready="playVideo"
             @playing="$emit('playing')"
             @error="$emit('error')"
