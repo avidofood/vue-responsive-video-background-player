@@ -1,6 +1,6 @@
 {
   "name": "vue-responsive-video-background-player",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Play your own videos in background responsively",
   "main": "dist/index.common.js",
   "unpkg": "dist/index.umd.min.js",

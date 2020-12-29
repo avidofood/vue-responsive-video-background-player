@@ -21,7 +21,7 @@
 ### 1: Add with npm 💻
 ```bash
  # For Vue 2.x.x
- npm install vue-responsive-video-background-player@1.2.1
+ npm install vue-responsive-video-background-player@1.2.2
 
 # For Vue 3.x.x
  npm install vue-responsive-video-background-player
