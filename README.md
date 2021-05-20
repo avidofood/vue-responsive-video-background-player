@@ -192,3 +192,7 @@ This package is based on
  - https://tesla.com
 
 Oh come on. You read everything?? If you liked it so far, hit the ⭐️ button to give me a 🤩 face. 
+
+## Changelog
+
+Mental node. Because of vue-cli, I cannot upgrade to webpack 5, therefore I cannot use laravel-mix 6...
