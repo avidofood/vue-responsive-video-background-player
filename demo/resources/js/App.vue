@@ -1,11 +1,11 @@
 <template>
     <video-background
         class="video-container"
-        src="/demo/public/videos/roadster-loop-imperial.mp4"
+        src="demo/public/videos/roadster-loop-imperial.mp4"
         overlay="linear-gradient(0deg, rgba(0, 0, 0, 0.88), rgba(251, 148, 158, 0.22), rgba(251, 148, 158, 0.42))"
         :sources="[
-            {src: '/demo/public/videos/accessories-hero-desktop.mp4', res: 991, autoplay: true},
-            {src: '/demo/public/videos/power-hero-mobile.mp4', res: 575, autoplay: true, poster: '/demo/public/images/hero-mobile@2.jpg'}
+            {src: 'demo/public/videos/accessories-hero-desktop.mp4', res: 991, autoplay: true},
+            {src: 'demo/public/videos/power-hero-mobile.mp4', res: 575, autoplay: true, poster: 'demo/public/images/hero-mobile@2.jpg'}
         ]"
     >
         <div class="d-flex justify-content-center align-items-center h-50 px-2">
