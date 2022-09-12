@@ -1,8 +1,4 @@
 import { createApp } from 'vue';
-import VideoBackground from '../../../src/index';
+import App from './App.vue';
 
-const app = createApp({});
-
-app.component('VideoBackground', VideoBackground);
-
-app.mount('#app');
+createApp(App).mount('#app');

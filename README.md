@@ -42,6 +42,7 @@
 ```
 
 ### (3: Only for Nuxt.js users)
+#### Nuxt.js v2.xx.x
  >Thanks to [@skoulix](https://github.com/avidofood/vue-responsive-video-background-player/issues/8#issuecomment-654821213) for his instructions:
 
   Again this is only for Nuxt.js users. Gridsome users click [here](https://gridsome.org/docs/assets-scripts/#without-ssr-support). At your `nuxt.config.js` locate the part where you declare your plugins and import the file. Example: 
@@ -56,6 +57,22 @@ plugins: [
 ```
 
 Now the component is globally available and can be used at any .vue file without issues.
+
+#### Nuxt.js v3.xx.x
+ >Thanks to [@Vertenz](https://github.com/avidofood/vue-responsive-video-background-player/issues/8#issuecomment-1192011721) for his instructions:
+
+ for NUXT 3 I used directive to make it work. Create **plugins** directory then add **video-bg.client.ts** _(or any name but **.client** is obligatory for client side render, cause you don't have the window at ssr)_ file with
+
+```
+import { defineNuxtPlugin } from "#app";
+import { Plugin } from "vue-responsive-video-background-player";
+
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.vueApp.use(Plugin);
+});
+```
+
+then you use the **video-background** tag
 
 
 ## Usage - (or to make it runnable 🏃‍♂️)
@@ -103,14 +120,14 @@ This package is for responsive videos depicting different video resolution. Have
 
 This is your path to your video. You can just use this value for showing your video in every resolution.
 
- >⚠️**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: `:src="require(``@/assets/video/timelapse.mp4``)"`. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
+ >**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: ``:src="require(`@/assets/video/timelapse.mp4`)"``. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
 
 
 - `poster` (default: `''`)
 
 This is your first background image that is shown before the video is loaded.
 
- >⚠️**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: `:src="require(``@/assets/img/logo.png``)"`. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
+ >**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: ``:src="require(`@/assets/img/logo.png`)"``. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
 
 - `sources` (default: `[]`)
 

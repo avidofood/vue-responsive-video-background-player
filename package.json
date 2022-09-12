@@ -1,22 +1,25 @@
 {
   "name": "vue-responsive-video-background-player",
-  "version": "2.2.4",
+  "version": "2.3.0",
   "description": "Play your own videos in background responsively",
-  "main": "dist/index.common.js",
-  "unpkg": "dist/index.umd.min.js",
+  "main": "./dist/vue-responsive-video-background-player.umd.js",
+  "unpkg": "./dist/vue-responsive-video-background-player.umd.js",
+  "module": "./dist/vue-responsive-video-background-player.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-responsive-video-background-player.mjs",
+      "require": "./dist/vue-responsive-video-background-player.umd.js"
+    }
+  },
   "private": false,
   "scripts": {
-    "demo": "npm run development",
-    "development": "mix",
-    "watch": "mix watch",
-    "build": "vue-cli-service build",
-    "build-bundle": "vue-cli-service build --target lib --name index ./src/index.js"
+    "build:dist": "LIB_NAME=dist vite build",
+    "build:demo": "LIB_NAME=demo vite build",
+    "build": "npm run build:dist && npm run build:demo",
+    "publish": "npm run build && npm publish"
   },
   "files": [
-    "dist/*",
-    "src/*",
-    "*.json",
-    "*.js"
+    "dist/*"
   ],
   "repository": {
     "type": "git",
@@ -44,13 +47,12 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^5.0.8",
-    "@vue/cli-service": "^5.0.8",
-    "eslint": "^8.20.0",
-    "eslint-config-avidofood": "^3.0.3",
-    "laravel-mix": "^6.0.49",
-    "vue": "^3.2.37",
-    "vue-loader": "^17.0.0"
+    "@vitejs/plugin-vue": "^3.0.3",
+    "eslint": "^8.23.1",
+    "eslint-config-avidofood": "^3.1.0",
+    "vite": "^3.0.9",
+    "vite-plugin-css-injected-by-js": "^2.0.4",
+    "vue": "^3.2.39"
   },
   "release": {
     "branch": "master"
