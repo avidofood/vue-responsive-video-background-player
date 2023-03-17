@@ -31,7 +31,7 @@ export default {
 
     },
     methods: {
-        $_change_video_resolution() {
+        _change_video_resolution() {
             this.width = this.$_innerWidth();
         },
         $_innerWidth() {
@@ -44,12 +44,12 @@ export default {
 
     },
     beforeMount() {
-        this.$_change_video_resolution();
+        this._change_video_resolution();
     },
     mounted() {
-        window.addEventListener('resize', throttle(this.$_change_video_resolution, 250));
+        window.addEventListener('resize', throttle(this._change_video_resolution, 250));
     },
     beforeUnmount() {
-        window.removeEventListener('resize', throttle(this.$_change_video_resolution, 250));
+        window.removeEventListener('resize', throttle(this._change_video_resolution, 250));
     },
 };
