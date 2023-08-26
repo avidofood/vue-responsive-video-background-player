@@ -182,6 +182,7 @@ You can add your own transition styles here. If you set it to empty string, it w
 
 - `ready`: Video is loaded
 - `playing`: Video is playing
+- `paused`: Video is paused
 - `error`: Video error
 - `loading`: Video is loading
 - `ended`: Video finished, only when `loop` is set to false
@@ -190,11 +191,11 @@ You can add your own transition styles here. If you set it to empty string, it w
 
 If you happen to need more control over the player, you can use the internal methods. For that, you need to set `ref=videobackground` to the HTML tag `<video-background>`. After that you can call all methods like this `this.$refs.videobackground.player.play()`.
 
-- `play()`: Video is playing
-- `pause()`: Video is paused
-- `show()`: Video is shown
-- `hide()`: Video is hidden, the poster is shown
-- `load()`: Video is loaded
+- `play()`: Plays the video
+- `pause()`: Pauses the video
+- `show()`: Shows the video
+- `hide()`: hides the video and the poster will be shown
+- `load()`: Loads the video
 
  
 ## Security
