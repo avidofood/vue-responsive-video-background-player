@@ -19,6 +19,10 @@ export default {
         type: String,
         default: 'cover',
     },
+    posterBgSize: {
+        type: String,
+        default: 'cover',
+    },
     objectPosition: {
         type: String,
         default: 'center',

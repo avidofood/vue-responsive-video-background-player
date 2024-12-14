@@ -6,6 +6,8 @@
         <video-poster
             v-if="current.poster || poster"
             :poster="current.poster || poster"
+            :background-size="posterBgSize"
+            :background-position="objectPosition"
         />
 
         <video-player
@@ -18,6 +20,7 @@
             :playback-rate="playbackRate"
             :transition="transition"
             :object-fit="objectFit"
+            :object-position="objectPosition"
             @ready="playVideo"
             @playing="$emit('playing')"
             @error="$emit('error')"
