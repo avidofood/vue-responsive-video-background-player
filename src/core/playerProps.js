@@ -19,6 +19,10 @@ export default {
         type: String,
         default: 'cover',
     },
+    objectPosition: {
+        type: String,
+        default: 'center',
+    },
     playsWhen: {
         type: String,
         default: 'canplay',

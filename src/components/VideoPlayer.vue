@@ -35,11 +35,12 @@ export default {
     },
     computed: {
         styleObject() {
-            if (!this.objectFit) {
+            if (!this.objectFit && !this.objectPosition) {
                 return {};
             }
             return {
                 objectFit: this.objectFit,
+                objectPosition: this.objectPosition,
             };
         },
     },
