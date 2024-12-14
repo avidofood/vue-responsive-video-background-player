@@ -12,11 +12,21 @@ export default {
             type: String,
             required: true,
         },
+        backgroundSize: {
+            type: String,
+            default: 'cover',
+        },
+        backgroundPosition: {
+            type: String,
+            default: 'center',
+        },
     },
     computed: {
         image() {
             return {
                 backgroundImage: `url(${this.poster})`,
+                backgroundSize: this.backgroundSize,
+                backgroundPosition: this.backgroundPosition,
             };
         },
     },
@@ -27,8 +37,6 @@ export default {
     .video-buffering{
         width: 100%;
         overflow: hidden;
-        background-size: cover;
-        background-position: center;
         height: 100%;
         top: 0;
         left: 0;
