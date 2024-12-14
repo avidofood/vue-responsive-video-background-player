@@ -36,7 +36,7 @@
 ```
 ### 2b: Install as a plugin 
 ```javascript
- import { Plugin } from 'vue-responsive-video-background-player'
+ import { Plugin } from 'vue-responsive-video-background-player'
 
  Vue.use(Plugin);
 ```
@@ -165,6 +165,18 @@ https://www.w3schools.com/tags/att_video_preload.asp
 - `objectFit` (default: `cover`)
 
 So the video fits perfectly in the container
+
+- `objectPosition` (default: `center`)
+
+So the video fits exact position in the container
+
+> the value is also used as a poster background-position 
+
+- `posterBgSize` (default: `cover`)
+
+So the poster fits perfectly in the container
+
+> Using the same values for `objectFit` and `posterBgSize` is recommended
 
 - `playsWhen` (default: `canplay`)
 
