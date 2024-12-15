@@ -12,7 +12,7 @@
 
 ![Laravel Tongue](https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/roadster.png)
 
-**If you are looking to play videos in the background, you have found the best Vue package for it 😜 (Currently no YouTube videos)**
+**If you are looking to play videos in the background, you've found the right Vue package! 😜 (Heads up: No YouTube videos... yet!)**
 
  >**Prerequisites**: Vue 2.x.x or Vue 3.x.x
 
@@ -206,22 +206,22 @@ If you happen to need more control over the player, you can use the internal met
 - `play()`: Plays the video
 - `pause()`: Pauses the video
 - `show()`: Shows the video
-- `hide()`: hides the video and the poster will be shown
+- `hide()`: Hides the video and shows the poster
 - `load()`: Loads the video
 
  
 ## Security
 
-If you discover any security related issues, please don't email me. I'm afraid 😱. avidofood@protonmail.com
+If you discover any security problems, please, don't email me. (I'm a bit scared 😱) avidofood@protonmail.com
 
 ## Credits
 
 Now comes the best part! 😍
-This package is based on
+This package was inspired by:
 
  - https://tesla.com
 
-Oh come on. You read everything?? If you liked it so far, hit the ⭐️ button to give me a 🤩 face. 
+Wow, you really read all that?! If you enjoyed this, hit the ⭐️ button to give me a 🤩 face. 
 
 ## Changelog
 
