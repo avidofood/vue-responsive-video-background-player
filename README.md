@@ -212,4 +212,12 @@ Oh come on. You read everything?? If you liked it so far, hit the ⭐️ button 
 
 ## Changelog
 
-Mental node. Because of vue-cli, I cannot upgrade to webpack 5, therefore I cannot use laravel-mix 6...
+### v2.4.0
+- **Breaking Change**: Removed `$` prefix from private methods to prevent potential conflicts with other libraries (e.g., jQuery).  
+  The following methods have been renamed:
+  - `$_change_video_resolution` → `_change_video_resolution`
+  - `$_innerWidth` → `_innerWidth`
+
+  If you were using these methods in your project, please update your code accordingly.
+
+- Improved compatibility with legacy code and projects using jQuery.
