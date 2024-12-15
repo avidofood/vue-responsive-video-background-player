@@ -20,6 +20,7 @@
             :object-fit="objectFit"
             @ready="playVideo"
             @playing="$emit('playing')"
+            @paused="$emit('paused')"
             @error="$emit('error')"
             @loading="$emit('loading')"
             @ended="$emit('ended')"
@@ -47,7 +48,7 @@ import resize from './core/resize';
 export default {
     props,
     mixins: [resize],
-    emits: ['playing', 'error', 'loading', 'ended', 'ready'],
+    emits: ['playing', 'paused', 'error', 'loading', 'ended', 'ready'],
     components: {
         VideoPlayer,
         VideoPoster,

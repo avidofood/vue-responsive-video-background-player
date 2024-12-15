@@ -27,7 +27,7 @@ import props from '../core/playerProps';
 
 export default {
     props,
-    emits: ['playing', 'error', 'loading', 'ended', 'ready'],
+    emits: ['playing', 'paused', 'error', 'loading', 'ended', 'ready'],
     data() {
         return {
             showVideo: false,
@@ -52,6 +52,7 @@ export default {
         pause() {
             if (this.$refs.video) {
                 this.$refs.video.pause();
+                this.$emit('paused');
             }
         },
         load() {
