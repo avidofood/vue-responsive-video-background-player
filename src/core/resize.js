@@ -1,5 +1,6 @@
 import throttle from '../lib/throttle';
 
+/* eslint-disable no-underscore-dangle */
 export default {
     data() {
         return {
@@ -53,3 +54,4 @@ export default {
         window.removeEventListener('resize', throttle(this._change_video_resolution, 250));
     },
 };
+/* eslint-enable no-underscore-dangle */
