@@ -71,6 +71,12 @@ export default {
                 this.$emit('paused');
             }
         },
+        stop() {
+            if (this.$refs.video) {
+                this.pause();
+                this.$refs.video.currentTime = 0;
+            }
+        },
         load() {
             this.hide();
             clearTimeout(this.loadTimer);

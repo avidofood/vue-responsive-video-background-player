@@ -161,6 +161,34 @@ describe('playback', () => {
     });
 });
 
+describe('stop()', () => {
+    it('pauses the video and goes back to the start (#30)', async () => {
+        const wrapper = mountBackground();
+        await makeReady(wrapper);
+        videoOf(wrapper).currentTime = 5;
+        HTMLMediaElement.prototype.pause.mockClear();
+
+        wrapper.vm.player.stop();
+
+        expect(HTMLMediaElement.prototype.pause).toHaveBeenCalledTimes(1);
+        expect(videoOf(wrapper).currentTime).toBe(0);
+        expect(wrapper.emitted('paused')).toHaveLength(1);
+    });
+
+    it('plays from the start again after stop()', async () => {
+        const wrapper = mountBackground();
+        await makeReady(wrapper);
+        videoOf(wrapper).currentTime = 5;
+
+        wrapper.vm.player.stop();
+        wrapper.vm.player.play();
+        await flushPromises();
+
+        expect(videoOf(wrapper).currentTime).toBe(0);
+        expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2);
+    });
+});
+
 describe('plugin', () => {
     it('registers the component as VideoBackground', () => {
         const app = createApp({});
