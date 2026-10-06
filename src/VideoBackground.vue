@@ -24,7 +24,7 @@
             @ready="playVideo"
             @playing="$emit('playing')"
             @paused="$emit('paused')"
-            @error="$emit('error')"
+            @error="$emit('error', $event)"
             @loading="$emit('loading')"
             @ended="$emit('ended')"
         />
