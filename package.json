@@ -16,7 +16,7 @@
     "build:dist": "vite build --mode dist",
     "build:demo": "vite build --mode demo",
     "build": "npm run build:dist && npm run build:demo",
-    "lint": "eslint --ext .js,.vue src demo/resources vite.config.mjs",
+    "lint": "eslint --ext .js,.vue src demo/resources tests vite.config.mjs",
     "test": "vitest run",
     "prepack": "npm run build:dist"
   },
