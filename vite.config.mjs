@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -44,6 +45,18 @@ const builds = {
     },
 };
 
+// Copies the hand-written types next to the build. Without "type": "module" in package.json,
+// TypeScript reads a .d.ts file as CommonJS and a .d.mts file as ESM, so we ship both.
+const types = () => ({
+    name: 'types',
+    generateBundle({ format }) {
+        if (format !== 'es') return;
+        const source = readFileSync(fromRoot('./src/index.d.ts'), 'utf8');
+        this.emitFile({ type: 'asset', fileName: 'index.d.ts', source });
+        this.emitFile({ type: 'asset', fileName: 'index.d.mts', source });
+    },
+});
+
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
     if (command === 'build' && builds[mode] === undefined) {
@@ -55,6 +68,7 @@ export default defineConfig(({ command, mode }) => {
         plugins: [
             vue(),
             cssInjectedByJsPlugin(),
+            mode === 'dist' && types(),
         ],
         test: {
             environment: 'jsdom',
