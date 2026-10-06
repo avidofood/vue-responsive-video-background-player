@@ -5,6 +5,8 @@ export default {
     data() {
         return {
             width: 0,
+            // The server does not know the window width. It is known after the first measurement
+            measured: false,
         };
     },
     computed: {
@@ -35,6 +37,7 @@ export default {
     methods: {
         _change_video_resolution() {
             this.width = this._innerWidth();
+            this.measured = true;
         },
         _innerWidth() {
             return window.innerWidth && document.documentElement.clientWidth
@@ -46,9 +49,18 @@ export default {
 
     },
     beforeMount() {
-        this._change_video_resolution();
+        // While Vue hydrates server-rendered HTML, the vnode already holds the element from the
+        // server. Vue uses the same check. The first render must then match the server, so the
+        // measurement waits until mounted. ($el is no help here: in dev builds it is null.)
+        const serverElement = this.$.vnode.el;
+        if (!serverElement || !serverElement.isConnected) {
+            this._change_video_resolution();
+        }
     },
     mounted() {
+        if (!this.measured) {
+            this._change_video_resolution();
+        }
         // removeEventListener needs the same function that addEventListener got
         this._resizeHandler = throttle(this._change_video_resolution, 250);
         window.addEventListener('resize', this._resizeHandler);

@@ -12,7 +12,7 @@
 
         <video-player
             ref="player"
-            :src="current.src"
+            :src="measured ? current.src : ''"
             :muted="muted"
             :loop="loop"
             :preload="preload"

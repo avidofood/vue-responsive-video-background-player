@@ -14,6 +14,7 @@
                 :style="styleObject"
             >
                 <source
+                    v-if="src"
                     :src="src"
                     :type="getMediaType(src)"
                     @error="videoError"
@@ -56,7 +57,10 @@ export default {
         },
     },
     watch: {
-        src() {
+        src(newSrc, oldSrc) {
+            // The first source after server-side rendering. The browser loads a newly added
+            // <source> by itself, because the video has no source yet
+            if (!oldSrc) return;
             this.load();
         },
     },
