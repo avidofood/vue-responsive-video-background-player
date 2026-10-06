@@ -12,7 +12,7 @@
 
         <video-player
             ref="player"
-            :src="current.src"
+            :src="measured ? current.src : ''"
             :muted="muted"
             :loop="loop"
             :preload="preload"
@@ -24,7 +24,7 @@
             @ready="playVideo"
             @playing="$emit('playing')"
             @paused="$emit('paused')"
-            @error="$emit('error')"
+            @error="$emit('error', $event)"
             @loading="$emit('loading')"
             @ended="$emit('ended')"
         />

@@ -14,8 +14,10 @@
                 :style="styleObject"
             >
                 <source
+                    v-if="src"
                     :src="src"
                     :type="getMediaType(src)"
+                    @error="videoError"
                 >
             </video>
         </div>
@@ -24,6 +26,16 @@
 
 <script>
 import props from '../core/playerProps';
+
+// Only well-known types. Without a type attribute the browser checks the file itself
+const mediaTypes = {
+    mp4: 'video/mp4',
+    m4v: 'video/mp4',
+    webm: 'video/webm',
+    ogv: 'video/ogg',
+    ogg: 'video/ogg',
+    m3u8: 'application/vnd.apple.mpegurl',
+};
 
 export default {
     props,
@@ -45,7 +57,10 @@ export default {
         },
     },
     watch: {
-        src() {
+        src(newSrc, oldSrc) {
+            // The first source after server-side rendering. The browser loads a newly added
+            // <source> by itself, because the video has no source yet
+            if (!oldSrc) return;
             this.load();
         },
     },
@@ -56,19 +71,38 @@ export default {
                 this.$emit('paused');
             }
         },
+        stop() {
+            if (this.$refs.video) {
+                this.pause();
+                this.$refs.video.currentTime = 0;
+            }
+        },
         load() {
             this.hide();
+            clearTimeout(this.loadTimer);
             // ugly, but we want to give hide 1 sec pause until we load the next video
-            setTimeout(() => {
+            this.loadTimer = setTimeout(() => {
+                this.isReady = false;
                 this.$refs.video.load();
                 this.$emit('loading');
             }, 1000);
         },
         play() {
             this.setPlaybackRate();
-            this.$refs.video.play();
-            this.show();
-            this.$emit('playing');
+            // Old browsers return nothing instead of a promise
+            return Promise.resolve(this.$refs.video.play())
+                .then(() => {
+                    this.show();
+                    this.$emit('playing');
+                })
+                .catch((error) => {
+                    // A new load() interrupted play(). The next ready event plays the new video
+                    if (error && error.name === 'AbortError') return;
+                    // The browser blocked playback, for example iOS in Low Power Mode.
+                    // The poster stays visible
+                    this.hide();
+                    this.$emit('error', error);
+                });
         },
         show() {
             this.showVideo = true;
@@ -77,20 +111,25 @@ export default {
             this.showVideo = false;
         },
         getMediaType(src) {
-            return `video/${src.split('.').pop().split(/[?#]/)[0]}`;
+            const extension = src.split(/[?#]/)[0].split('.').pop().toLowerCase();
+            return mediaTypes[extension];
         },
         videoCanPlay() {
             return !!this.$refs.video.canPlayType;
         },
         videoReady() {
+            // The browser fires the playsWhen event again after the video waited for data.
+            // Only the first one after a load counts
+            if (this.isReady) return;
+            this.isReady = true;
             // Unfortunately we have the iOS bug, that we need to set autoplay always to true.
             // That means we need to first pause the video,
             // and later check if we want to autoplay or not
-            this.pause();
+            this.$refs.video.pause();
             this.$emit('ready');
         },
-        videoError() {
-            this.$emit('error');
+        videoError(event) {
+            this.$emit('error', event);
         },
         videoEnded() {
             this.$emit('ended');
@@ -106,6 +145,9 @@ export default {
             this.$refs.video.onerror = this.videoError;
             this.$refs.video.onended = this.videoEnded;
         }
+    },
+    beforeUnmount() {
+        clearTimeout(this.loadTimer);
     },
 };
 </script>
@@ -133,7 +175,7 @@ export default {
         transition: opacity 1s;
     }
 
-    .fade-enter{
+    .fade-enter-from{
         opacity: 0;
     }
     .fade-leave-to{

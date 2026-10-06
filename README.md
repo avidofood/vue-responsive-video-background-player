@@ -14,38 +14,78 @@
 
 **If you are looking to play videos in the background, you've found the right Vue package! 😜 (Heads up: No YouTube videos... yet!)**
 
- >**Prerequisites**: Vue 2.x.x or Vue 3.x.x
+ >**Prerequisites**: Vue 3.2 or newer for version 2.x of this package. For Vue 2, use version 1.x.
 
 ## Installation in 2 Steps
 
 ### 1: Add with npm 💻
 ```bash
- # For Vue 2.x.x
- npm install vue-responsive-video-background-player@1.3.1
-
 # For Vue 3.x.x
- npm install vue-responsive-video-background-player
+npm install vue-responsive-video-background-player
+
+# For Vue 2.x.x
+npm install vue-responsive-video-background-player@1x
 ```
 
-### 2a: Install as a component
+### 2a: Import the component
+
+```vue
+<script setup>
+import VideoBackground from 'vue-responsive-video-background-player';
+</script>
+```
+
+Or register it globally:
 
 ```javascript
- import VideoBackground from 'vue-responsive-video-background-player'
+import { createApp } from 'vue';
+import VideoBackground from 'vue-responsive-video-background-player';
 
- Vue.component('video-background', VideoBackground);
+const app = createApp(App);
+app.component('VideoBackground', VideoBackground);
 ```
-### 2b: Install as a plugin 
+
+### 2b: Install as a plugin
 ```javascript
- import { Plugin } from 'vue-responsive-video-background-player'
+import { createApp } from 'vue';
+import { Plugin } from 'vue-responsive-video-background-player';
 
- Vue.use(Plugin);
+const app = createApp(App);
+app.use(Plugin);
 ```
 
-### (3: Only for Nuxt.js users)
-#### Nuxt.js v2.xx.x
+The plugin registers the component as `VideoBackground`. You can use it as `<VideoBackground>` or `<video-background>`.
+
+### (3: Only for Nuxt users)
+
+#### Nuxt 3 and Nuxt 4
+
+Since version 2.5.0 the component works with server-side rendering. Create a plugin file, for example `plugins/video-background.ts`:
+
+```javascript
+import { Plugin } from 'vue-responsive-video-background-player';
+
+export default defineNuxtPlugin((nuxtApp) => {
+    nuxtApp.vueApp.use(Plugin);
+});
+```
+
+Then use the `<video-background>` tag in any page. The server renders the section, the poster, the overlay and your slot content. The server does not know the window width, so the browser adds the video after hydration.
+
+The component injects its CSS with JavaScript. Until the JavaScript runs, the page shows the server HTML without these styles. If you prefer to render the component only in the browser, name the plugin file `video-background.client.ts` and wrap the component in `<ClientOnly>`:
+
+```html
+<ClientOnly>
+    <video-background src="/videos/hero.mp4" style="height: 100vh;" />
+</ClientOnly>
+```
+
+A `.client` plugin alone is not enough: the server cannot resolve the component, and Vue reports a hydration mismatch.
+
+#### Nuxt 2 (package version 1.x)
  >Thanks to [@skoulix](https://github.com/avidofood/vue-responsive-video-background-player/issues/8#issuecomment-654821213) for his instructions:
 
-  Again this is only for Nuxt.js users. Gridsome users click [here](https://gridsome.org/docs/assets-scripts/#without-ssr-support). At your `nuxt.config.js` locate the part where you declare your plugins and import the file. Example: 
+  Again this is only for Nuxt.js users. Gridsome users click [here](https://gridsome.org/docs/assets-scripts/#without-ssr-support). At your `nuxt.config.js` locate the part where you declare your plugins and import the file. Example:
 
 ```
 plugins: [
@@ -58,22 +98,17 @@ plugins: [
 
 Now the component is globally available and can be used at any .vue file without issues.
 
-#### Nuxt.js v3.xx.x
- >Thanks to [@Vertenz](https://github.com/avidofood/vue-responsive-video-background-player/issues/8#issuecomment-1192011721) for his instructions:
+### TypeScript
 
- for NUXT 3 I used directive to make it work. Create **plugins** directory then add **video-bg.client.ts** _(or any name but **.client** is obligatory for client side render, cause you don't have the window at ssr)_ file with
+Since version 2.5.0 the package contains type declarations for the props, the events, the player methods and the plugin. If you added a `declare module 'vue-responsive-video-background-player'` file for older versions, you can delete it.
 
+```typescript
+import type { VideoBackgroundSource } from 'vue-responsive-video-background-player';
+
+const sources: VideoBackgroundSource[] = [
+    { src: '/videos/mobile.mp4', res: 638, autoplay: true },
+];
 ```
-import { defineNuxtPlugin } from "#app";
-import { Plugin } from "vue-responsive-video-background-player";
-
-export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(Plugin);
-});
-```
-
-then you use the **video-background** tag
-
 
 ## Usage - (or to make it runnable 🏃‍♂️)
 
@@ -120,14 +155,17 @@ This package is for responsive videos depicting different video resolution. Have
 
 This is your path to your video. You can just use this value for showing your video in every resolution.
 
- >**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: ``:src="require(`@/assets/video/timelapse.mp4`)"``. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
+ >**Note** for Vite and Nuxt: Put the video in the `public` folder and use the path from the site root, for example `src="/videos/hero.mp4"`. Or import the file, for example `import heroVideo from '@/assets/hero.mp4'`, and bind it with `:src="heroVideo"`. With Vue CLI, bind it like this: ``:src="require(`@/assets/video/timelapse.mp4`)"``. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
 
+The component sets the `type` attribute of the video for `.mp4`, `.m4v`, `.webm`, `.ogv`, `.ogg` and `.m3u8` files. For other URLs, for example a URL without a file extension, it sets no type, and the browser checks the file itself.
+
+ >**HLS** (`.m3u8`): Safari, iOS and some other browsers play HLS streams natively. The component does not include [hls.js](https://github.com/video-dev/hls.js), so other browsers do not play the stream.
 
 - `poster` (default: `''`)
 
 This is your first background image that is shown before the video is loaded.
 
- >**Warning** for [Vue CLI](https://cli.vuejs.org/guide/creating-a-project.html): You need to bind the source like this: ``:src="require(`@/assets/img/logo.png`)"``. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
+ >**Note**: The same as for `src` applies. With Vue CLI, bind the image like this: ``:poster="require(`@/assets/img/logo.png`)"``.
 
 - `sources` (default: `[]`)
 
@@ -152,7 +190,7 @@ If you love overlays, then copy the overlay from the advanced example.
 
 - `muted` (default: `true`)
 
-Warning. Videos are perhaps not played when unmuted.
+Browsers block autoplay for most videos with sound. If the browser blocks the video, the poster stays visible and the component emits `error`.
 
 - `loop` (default: `true`)
 
@@ -160,7 +198,7 @@ Loops through the video. You can catch the event `ended` to show only the poster
 
 - `preload` (default: `auto`)
 
-https://www.w3schools.com/tags/att_video_preload.asp
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#preload
 
 - `objectFit` (default: `cover`)
 
@@ -180,36 +218,66 @@ So the poster fits perfectly in the container
 
 - `playsWhen` (default: `canplay`)
 
-This is important, if you know that you might have users with bad internet speed, you should definetly use `canplaythrough`. Learn more in [video events](https://www.w3schools.com/tags/ref_av_dom.asp).
+If some of your users have a slow connection, use `canplaythrough`. Learn more in [video events](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement#events).
 
 - `playbackRate` (default: `1.0`)
   
-The playbackRate property sets the current playback speed of the video. [Example](https://www.w3schools.com/jsref/prop_video_playbackrate.asp) but negative values didn't work for me?
+The playbackRate property sets the current playback speed of the video. [Example](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/playbackRate) but negative values didn't work for me?
 
 - `transition` (default: `fade`)
   
-You can add your own transition styles here. If you set it to empty string, it won't show any transitions.
+You can add your own transition styles here. If you set it to an empty string, the video shows without a transition.
+
+The `fade` transition takes one second. For a different duration, give the transition your own name and add the CSS for it:
+
+```html
+<video-background src="/videos/hero.mp4" transition="slow-fade" />
+
+<style>
+.slow-fade-enter-active,
+.slow-fade-leave-active {
+    transition: opacity 3s;
+}
+.slow-fade-enter-from,
+.slow-fade-leave-to {
+    opacity: 0;
+}
+</style>
+```
 
 ## Events 
 
-- `ready`: Video is loaded
+- `ready`: Video is loaded. The event fires once for each video that loads.
 - `playing`: Video is playing
 - `paused`: Video is paused
-- `error`: Video error
-- `loading`: Video is loading
-- `ended`: Video finished, only when `loop` is set to false
+- `error`: The video failed, for example because the file is missing, or the browser blocked playback. The event carries the error event of the video or the error of `play()`. The poster stays visible.
+- `loading`: A new video is loading, for example after a resize
+- `ended`: Video finished. This event fires only with `loop` set to false.
 
 ## Methods
 
 If you happen to need more control over the player, you can use the internal methods. For that, you need to set `ref=videobackground` to the HTML tag `<video-background>`. After that you can call all methods like this `this.$refs.videobackground.player.play()`.
 
-- `play()`: Plays the video
+- `play()`: Plays the video and returns a promise. The promise resolves after playback starts or after the browser blocks it.
 - `pause()`: Pauses the video
+- `stop()`: Pauses the video and goes back to the start. Call `play()` to start it again.
 - `show()`: Shows the video
 - `hide()`: Hides the video and shows the poster
-- `load()`: Loads the video
-
+- `load()`: Hides the video and loads it again after one second
  
+## Development
+
+You need Node.js 22.12 or newer (see `.nvmrc`).
+
+```bash
+npm install
+npm test          # unit tests and type checks
+npm run lint
+npm run build     # builds dist/ and the demo
+```
+
+`npm pack` and `npm publish` build `dist/` first.
+
 ## Security
 
 If you discover any security problems, please, don't email me. (I'm a bit scared 😱) avidofood@protonmail.com
@@ -225,12 +293,4 @@ Wow, you really read all that?! If you enjoyed this, hit the ⭐️ button to gi
 
 ## Changelog
 
-### v2.4.0
-- **Breaking Change**: Removed `$` prefix from private methods to prevent potential conflicts with other libraries (e.g., jQuery).  
-  The following methods have been renamed:
-  - `$_change_video_resolution` → `_change_video_resolution`
-  - `$_innerWidth` → `_innerWidth`
-
-  If you were using these methods in your project, please update your code accordingly.
-
-- Improved compatibility with legacy code and projects using jQuery.
+See [CHANGELOG.md](CHANGELOG.md).

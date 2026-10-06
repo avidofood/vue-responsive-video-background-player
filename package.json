@@ -1,30 +1,46 @@
 {
   "name": "vue-responsive-video-background-player",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "Play your own videos in background responsively",
+  "type": "commonjs",
   "main": "./dist/vue-responsive-video-background-player.umd.js",
   "unpkg": "./dist/vue-responsive-video-background-player.umd.js",
   "module": "./dist/vue-responsive-video-background-player.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/vue-responsive-video-background-player.mjs",
-      "require": "./dist/vue-responsive-video-background-player.umd.js"
-    }
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/vue-responsive-video-background-player.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vue-responsive-video-background-player.umd.js"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "private": false,
   "scripts": {
-    "build:dist": "LIB_NAME=dist vite build",
-    "build:demo": "LIB_NAME=demo vite build",
+    "build:dist": "vite build --mode dist",
+    "build:demo": "vite build --mode demo",
     "build": "npm run build:dist && npm run build:demo",
-    "publish": "npm run build && npm publish"
+    "lint": "eslint --ext .js,.vue src demo/resources tests vite.config.mjs",
+    "test": "vitest run && npm run test:types",
+    "test:types": "tsc -p tests/types",
+    "prepack": "npm run build:dist"
   },
   "files": [
-    "dist/*"
+    "dist"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/avidofood/vue-responsive-video-background-player.git"
+    "url": "git+https://github.com/avidofood/vue-responsive-video-background-player.git"
   },
+  "bugs": {
+    "url": "https://github.com/avidofood/vue-responsive-video-background-player/issues"
+  },
+  "homepage": "https://avidofood.github.io/vue-responsive-video-background-player/",
   "keywords": [
     "vue 3",
     "vue3",
@@ -38,7 +54,10 @@
     "vue player",
     "vue video",
     "resolution switcher",
-    "tesla"
+    "tesla",
+    "typescript",
+    "ssr",
+    "nuxt"
   ],
   "author": {
     "name": "Philipp Mochine",
@@ -46,13 +65,22 @@
     "url": "https://avidofood.com"
   },
   "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.2.0"
+  },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^3.2.0",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/test-utils": "^2.5.1",
     "eslint": "^8.57.1",
     "eslint-config-avidofood": "^3.2.0",
-    "vite": "^3.2.11",
-    "vite-plugin-css-injected-by-js": "^2.4.0",
-    "vue": "^3.5.13"
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-vue": "^9.33.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.3",
+    "vite-plugin-css-injected-by-js": "^5.0.2",
+    "vitest": "^5.0.3",
+    "vue": "^3.5.43"
   },
   "release": {
     "branch": "master"
