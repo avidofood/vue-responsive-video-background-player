@@ -2,6 +2,28 @@
 
 This file lists the changes of version 2.x (Vue 3). Version 1.x (Vue 2) is on the `1x` branch.
 
+## 2.6.0
+
+All new options are off by default. Without them, the component works as in 2.5.1.
+
+### Added
+
+- `pauseButton`: a button that pauses and plays the video, for [WCAG 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html) (Pause, Stop, Hide). It is a native button, first in the tab order inside the section. Its label changes between `pauseLabel` and `playLabel`. The `pause-button` slot replaces the icon. A pause with the button stays when the window switches to another source.
+- `respectReducedMotion`: if the user prefers reduced motion, only the poster shows, and the video does not load. The play button or `play()` starts it.
+- `pauseWhenHidden`: pauses the video while it is off screen or the page is in the background. It plays again when it is visible. A video that the user paused stays paused.
+- `lazy`: loads the video when the section comes within 200px of the viewport.
+- `keepLargerSource`: a smaller window keeps a larger video that already loads ([#14](https://github.com/avidofood/vue-responsive-video-background-player/issues/14)).
+- `hls` and `hlsConfig`: give the component the `Hls` class of hls.js ([#44](https://github.com/avidofood/vue-responsive-video-background-player/issues/44)). Where the browser supports hls.js, hls.js plays the HLS streams. Elsewhere, the browser plays them itself, as before. The package does not include hls.js.
+- `player.video`: the `<video>` element ([#30](https://github.com/avidofood/vue-responsive-video-background-player/issues/30)).
+- `vue-responsive-video-background-player/style.css`: the CSS as a file, for server-side rendering and for a strict Content Security Policy. The JavaScript still injects the CSS.
+- `play()` on a video that waits because of `lazy` or `respectReducedMotion` loads it first. Its promise resolves when the video plays.
+
+### Changed
+
+- The README shows how to show only the poster on small screens: a source with an empty `src` loads no video.
+- The tests unmount every component after each test.
+- The ESM file grows from 9.9 kB to 18 kB (gzip: from 3.4 kB to 5.5 kB).
+
 ## 2.5.1
 
 ### Fixed
