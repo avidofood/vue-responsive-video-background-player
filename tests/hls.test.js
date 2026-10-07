@@ -277,10 +277,7 @@ describe('hls', () => {
         expect(wrapper.emitted('playing')).toHaveLength(1);
     });
 
-    // Known open problem from the Codex review of 2.6.0: the old play() of a failed stream ends the
-    // wait of the newer play() too early. A guard on the play request fixed it, but it also left
-    // the wait open when the browser blocks playback. Turn this into it() when it is fixed
-    it.fails('does not end the wait of play() early when the old play() of a failed stream fails', async () => {
+    it('does not end the wait of play() early when the old play() of a failed stream fails', async () => {
         const plays = [];
         HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve, reject) => {
             plays.push({ resolve, reject });

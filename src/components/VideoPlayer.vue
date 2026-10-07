@@ -169,11 +169,16 @@ export default {
                     // A new load() interrupted play(). The next ready event plays the new video
                     if (error && error.name === 'AbortError') return;
                     // The browser blocked playback, for example iOS in Low Power Mode.
-                    // The poster stays visible
+                    // The poster stays visible. The wait ends before hide(), because hide()
+                    // makes this request obsolete
+                    this.resolveWaitingPlays();
                     this.hide();
                     this.$emit('error', error);
                 })
-                .then(() => this.resolveWaitingPlays());
+                .then(() => {
+                    // An obsolete request must not end the wait of a newer play()
+                    if (request === this.playRequest) this.resolveWaitingPlays();
+                });
         },
         show() {
             this.showVideo = true;
