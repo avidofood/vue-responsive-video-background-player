@@ -15,7 +15,7 @@ All new options are off by default. Without them, the component works as in 2.5.
 - `keepLargerSource`: a smaller window keeps a larger video that already loads ([#14](https://github.com/avidofood/vue-responsive-video-background-player/issues/14)).
 - `hls` and `hlsConfig`: give the component the `Hls` class of hls.js ([#44](https://github.com/avidofood/vue-responsive-video-background-player/issues/44)). Where the browser supports hls.js, hls.js plays the HLS streams. Elsewhere, the browser plays them itself, as before. The package does not include hls.js.
 - `player.video`: the `<video>` element ([#30](https://github.com/avidofood/vue-responsive-video-background-player/issues/30)).
-- `vue-responsive-video-background-player/style.css`: the CSS as a file, for server-side rendering and for a strict Content Security Policy. The JavaScript still injects the CSS.
+- `vue-responsive-video-background-player/style.css`: the CSS as a file, for server-side rendering and for a strict Content Security Policy. The JavaScript still injects the CSS. A type declaration comes with the file, because TypeScript 6 checks side-effect imports.
 - `play()` on a video that waits because of `lazy` or `respectReducedMotion` loads it first. Its promise resolves when the video plays.
 
 ### Changed

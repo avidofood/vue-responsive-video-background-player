@@ -18,7 +18,10 @@
         "default": "./dist/vue-responsive-video-background-player.umd.js"
       }
     },
-    "./style.css": "./dist/style.css",
+    "./style.css": {
+      "types": "./dist/style.css.d.ts",
+      "default": "./dist/style.css"
+    },
     "./package.json": "./package.json"
   },
   "private": false,

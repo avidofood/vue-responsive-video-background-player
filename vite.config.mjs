@@ -54,6 +54,8 @@ const types = () => ({
         const source = readFileSync(fromRoot('./src/index.d.ts'), 'utf8');
         this.emitFile({ type: 'asset', fileName: 'index.d.ts', source });
         this.emitFile({ type: 'asset', fileName: 'index.d.mts', source });
+        // TypeScript 6 checks side-effect imports, also import '.../style.css'
+        this.emitFile({ type: 'asset', fileName: 'style.css.d.ts', source: 'export {};\n' });
     },
 });
 
