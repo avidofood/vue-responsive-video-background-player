@@ -58,6 +58,18 @@ export interface VideoBackgroundProps {
     playbackRate?: number;
     /** Name of the transition that shows the video. Default: 'fade'. */
     transition?: string;
+    /** Shows a button that pauses and plays the video (WCAG 2.2.2). Default: false. */
+    pauseButton?: boolean;
+    /** Accessible name of the button while the video plays. Default: 'Pause background video'. */
+    pauseLabel?: string;
+    /** Accessible name of the button while the video is paused. Default: 'Play background video'. */
+    playLabel?: string;
+    /** Shows only the poster when the user prefers reduced motion. Default: false. */
+    respectReducedMotion?: boolean;
+    /** Pauses the video while it is off screen or the page is hidden. Default: false. */
+    pauseWhenHidden?: boolean;
+    /** Loads the video when the section comes near the viewport. Default: false. */
+    lazy?: boolean;
     /** The Hls class of hls.js. With it, HLS streams play in browsers without native HLS. */
     hls?: VideoBackgroundHls | null;
     /** Options for `new Hls()`. */
@@ -68,7 +80,10 @@ export interface VideoBackgroundProps {
 export interface VideoBackgroundPlayer {
     /** The `<video>` element. */
     readonly video: HTMLVideoElement;
-    /** Plays the video. The promise resolves when the video plays or the browser blocks it. */
+    /**
+     * Plays the video. The promise resolves when the video plays or the browser blocks it.
+     * A video that waits (lazy, respectReducedMotion) loads first.
+     */
     play(): Promise<void>;
     pause(): void;
     /** Pauses the video and goes back to the start. */
@@ -113,6 +128,12 @@ type VideoBackgroundPropOptions = {
     playsWhen: { type: PropType<string>; default: string };
     playbackRate: { type: PropType<number>; default: number };
     transition: { type: PropType<string>; default: string };
+    pauseButton: { type: PropType<boolean>; default: boolean };
+    pauseLabel: { type: PropType<string>; default: string };
+    playLabel: { type: PropType<string>; default: string };
+    respectReducedMotion: { type: PropType<boolean>; default: boolean };
+    pauseWhenHidden: { type: PropType<boolean>; default: boolean };
+    lazy: { type: PropType<boolean>; default: boolean };
     hls: { type: PropType<VideoBackgroundHls | null>; default: null };
     hlsConfig: { type: PropType<object> };
 };

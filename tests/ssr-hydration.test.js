@@ -7,7 +7,7 @@ import {
 import { renderToString } from 'vue/server-renderer';
 import { flushPromises } from '@vue/test-utils';
 import VideoBackground from '../src/index';
-import { sources } from './helpers';
+import { fakeIntersectionObserver, fakeReducedMotion, sources } from './helpers';
 
 const app = () => createSSRApp({
     render: () => h(VideoBackground, {
@@ -102,6 +102,89 @@ describe('hydration', () => {
 
         expect(container.querySelector('source').getAttribute('src')).toBe('/videos/mobile.mp4');
         expect(warn).not.toHaveBeenCalled();
+    });
+});
+
+describe('hydration with the 2.6 options', () => {
+    const hydrateWith = async (props) => {
+        const optionsApp = () => createSSRApp({
+            render: () => h(VideoBackground, {
+                src: '/videos/desktop.mp4',
+                poster: '/images/poster.jpg',
+                sources,
+                pauseButton: true,
+                ...props,
+            }, () => h('h1', 'Hello')),
+        });
+        const container = document.createElement('div');
+        container.innerHTML = await renderToString(optionsApp());
+        document.body.appendChild(container);
+        optionsApp().mount(container);
+        await flushPromises();
+        return container;
+    };
+
+    it('hydrates all new options without a mismatch', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        fakeIntersectionObserver();
+        fakeReducedMotion(true);
+        window.innerWidth = 1200;
+
+        const container = await hydrateWith({
+            respectReducedMotion: true, pauseWhenHidden: true, lazy: true,
+        });
+
+        const messages = [...warn.mock.calls, ...error.mock.calls].flat().join('\n');
+        expect(messages).not.toMatch(/mismatch/i);
+        expect(container.querySelector('source')).toBeNull();
+        // The server does not know the setting. The browser changes the label after hydration
+        expect(container.querySelector('button').getAttribute('aria-label')).toBe('Play background video');
+    });
+
+    it('loads the video after hydration when the lazy section comes near the viewport', async () => {
+        const observers = fakeIntersectionObserver();
+        window.innerWidth = 1200;
+        const container = await hydrateWith({ lazy: true });
+        expect(container.querySelector('source')).toBeNull();
+
+        observers[0].report(true);
+        await flushPromises();
+
+        expect(container.querySelector('source').getAttribute('src')).toBe('/videos/desktop.mp4');
+    });
+
+    it('starts hls.js after hydration', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const attachMedia = vi.fn();
+        class Hls {
+            static isSupported() {
+                return true;
+            }
+
+            static get Events() {
+                return { ERROR: 'hlsError' };
+            }
+
+            constructor() {
+                this.attachMedia = attachMedia;
+            }
+
+            on() {
+                return this;
+            }
+
+            loadSource(url) {
+                this.url = url;
+            }
+        }
+        window.innerWidth = 1200;
+
+        const container = await hydrateWith({ src: '/videos/hero.m3u8', sources: [], hls: Hls });
+
+        expect(warn.mock.calls.flat().join('\n')).not.toMatch(/mismatch/i);
+        expect(attachMedia).toHaveBeenCalledWith(container.querySelector('video'));
+        expect(container.querySelector('source')).toBeNull();
     });
 });
 

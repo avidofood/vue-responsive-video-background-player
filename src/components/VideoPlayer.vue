@@ -42,7 +42,7 @@ const mediaTypes = {
 
 export default {
     props,
-    emits: ['playing', 'paused', 'error', 'loading', 'ended', 'ready'],
+    emits: ['playing', 'paused', 'error', 'loading', 'ended', 'ready', 'request'],
     data() {
         return {
             showVideo: false,
@@ -75,8 +75,8 @@ export default {
     },
     watch: {
         src(newSrc, oldSrc) {
-            // The first source after server-side rendering. The browser loads a newly added
-            // <source> by itself, because the video has no source yet. hls.js does not
+            // The first source after server-side rendering or lazy loading. The browser loads a
+            // newly added <source> by itself, because the video has no source yet. hls.js does not
             if (!oldSrc) {
                 if (this.usesHls) this.attachHls();
                 return;
@@ -92,6 +92,7 @@ export default {
         pause() {
             if (this.$refs.video) {
                 this.cancelPlayRequest();
+                this.resolveWaitingPlays();
                 this.$refs.video.pause();
                 this.$emit('paused');
             }
@@ -121,6 +122,14 @@ export default {
             }, 1000);
         },
         play() {
+            if (!this.src) {
+                // The background holds the video back, for example for lazy loading. It loads the
+                // video now and plays it when it is ready. The promise waits for that
+                return new Promise((resolve) => {
+                    this.waitingPlays = [...(this.waitingPlays || []), resolve];
+                    this.$emit('request');
+                });
+            }
             this.setPlaybackRate();
             this.cancelPlayRequest();
             const request = this.playRequest;
@@ -140,7 +149,8 @@ export default {
                     // The poster stays visible
                     this.hide();
                     this.$emit('error', error);
-                });
+                })
+                .then(() => this.resolveWaitingPlays());
         },
         show() {
             this.showVideo = true;
@@ -153,6 +163,12 @@ export default {
         cancelPlayRequest() {
             this.playRequest = (this.playRequest || 0) + 1;
         },
+        // Ends the promises of play() calls that waited for the video
+        resolveWaitingPlays() {
+            const waiting = this.waitingPlays || [];
+            this.waitingPlays = [];
+            waiting.forEach((resolve) => resolve());
+        },
         attachHls() {
             this.destroyHls();
             const Hls = this.hls;
@@ -163,6 +179,7 @@ export default {
                 if (!data.fatal || hls !== this.hlsPlayer) return;
                 this.destroyHls();
                 this.hide();
+                this.resolveWaitingPlays();
                 // A CustomEvent, so that error always gets an Event. detail has the data of hls.js
                 this.$emit('error', new CustomEvent('error', { detail: data }));
             });
@@ -199,6 +216,7 @@ export default {
             this.$emit('ready');
         },
         videoError(event) {
+            this.resolveWaitingPlays();
             this.$emit('error', event);
         },
         videoEnded() {
@@ -221,6 +239,7 @@ export default {
     beforeUnmount() {
         clearTimeout(this.loadTimer);
         this.destroyHls();
+        this.resolveWaitingPlays();
     },
 };
 </script>

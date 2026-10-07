@@ -3,7 +3,7 @@ import {
 } from 'vitest';
 import { flushPromises } from '@vue/test-utils';
 import {
-    makeReady, mountBackground, resizeTo, sourceOf, videoIsShown, videoOf,
+    fakeIntersectionObserver, makeReady, mountBackground, resizeTo, sourceOf, videoIsShown, videoOf,
 } from './helpers';
 
 // Stands in for the Hls class of hls.js
@@ -184,5 +184,18 @@ describe('hls', () => {
 
         expect(instances).toHaveLength(1);
         expect(instances[0].attachMedia).toHaveBeenCalledWith(videoOf(wrapper));
+    });
+
+    it('starts hls.js when lazy loading reaches the section', async () => {
+        const observers = fakeIntersectionObserver();
+        const { Hls, instances } = fakeHls();
+        mountBackground({ src: stream, hls: Hls, lazy: true });
+        expect(instances).toHaveLength(0);
+
+        observers[0].report(true);
+        await flushPromises();
+
+        expect(instances).toHaveLength(1);
+        expect(instances[0].loadSource).toHaveBeenCalledWith(stream);
     });
 });

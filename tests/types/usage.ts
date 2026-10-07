@@ -30,9 +30,15 @@ h(VideoBackground, {
     onError: (reason: Event | DOMException) => reason,
 });
 
-// hls.js
+// The options of 2.6
 h(VideoBackground, {
     src: '/videos/hero.m3u8',
+    pauseButton: true,
+    pauseLabel: 'Video anhalten',
+    playLabel: 'Video abspielen',
+    respectReducedMotion: true,
+    pauseWhenHidden: true,
+    lazy: true,
     hls: Hls,
     hlsConfig: { capLevelToPlayerSize: true },
 });
@@ -40,6 +46,9 @@ h(VideoBackground, {
 // The Hls class of hls.js fits the type
 const hlsClass: VideoBackgroundHls = Hls;
 const options: VideoBackgroundProps = { src: '/videos/hero.m3u8', hls: Hls, hlsConfig: Hls.DefaultConfig };
+
+// @ts-expect-error pauseButton is a boolean
+h(VideoBackground, { src: '/videos/desktop.mp4', pauseButton: 'yes' });
 
 // @ts-expect-error hls needs the Hls class, not an instance
 h(VideoBackground, { src: '/videos/hero.m3u8', hls: new Hls() });

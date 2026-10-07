@@ -48,19 +48,7 @@ export default {
         },
 
     },
-    beforeMount() {
-        // While Vue hydrates server-rendered HTML, the vnode already holds the element from the
-        // server, also in a container outside the document. Vue uses the same check. The first
-        // render must then match the server, so the measurement waits until mounted.
-        // ($el is no help here: in dev builds it is null.)
-        if (!this.$.vnode.el) {
-            this._change_video_resolution();
-        }
-    },
     mounted() {
-        if (!this.measured) {
-            this._change_video_resolution();
-        }
         // removeEventListener needs the same function that addEventListener got
         this._resizeHandler = throttle(this._change_video_resolution, 250);
         window.addEventListener('resize', this._resizeHandler);
