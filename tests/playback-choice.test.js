@@ -20,11 +20,23 @@ describe('pause(), stop() and play() before the video is ready', () => {
     });
 
     it('plays a video without autoplay when play() comes before it is ready', async () => {
+        // Like a browser: play() waits for data, and the pause at readiness interrupts it
+        const plays = [];
+        HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve, reject) => {
+            plays.push({ resolve, reject });
+        }));
+        HTMLMediaElement.prototype.pause.mockImplementation(() => {
+            plays.splice(0).forEach(({ reject }) => reject(new DOMException('interrupted', 'AbortError')));
+        });
         const wrapper = mountBackground({ autoplay: false });
 
         wrapper.vm.player.play();
         await makeReady(wrapper);
+        expect(plays).toHaveLength(1);
+        plays[0].resolve();
+        await flushPromises();
 
+        expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2);
         expect(wrapper.emitted('playing')).toHaveLength(1);
         expect(videoIsShown(wrapper)).toBe(true);
     });
@@ -86,6 +98,24 @@ describe('pause(), stop() and play() before the video is ready', () => {
         await makeReady(wrapper);
 
         expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2);
+    });
+});
+
+describe('a choice through the player and lazy loading', () => {
+    it('forgets pause() when the window switches to another video before lazy loading', async () => {
+        vi.useFakeTimers();
+        const observers = fakeIntersectionObserver();
+        window.innerWidth = 1200;
+        const wrapper = mountBackground({ lazy: true, sources });
+
+        wrapper.vm.player.pause();
+        await resizeTo(500);
+        observers[0].report(true);
+        await flushPromises();
+        await makeReady(wrapper);
+
+        expect(sourceOf(wrapper).attributes('src')).toBe('/videos/mobile.mp4');
+        expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
     });
 });
 

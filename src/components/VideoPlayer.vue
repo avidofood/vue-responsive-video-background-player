@@ -173,7 +173,10 @@ export default {
                     this.hide();
                     this.$emit('error', error);
                 })
-                .then(() => this.resolveWaitingPlays());
+                .then(() => {
+                    // An obsolete request must not end the wait of a newer play()
+                    if (request === this.playRequest) this.resolveWaitingPlays();
+                });
         },
         show() {
             this.showVideo = true;
@@ -200,6 +203,10 @@ export default {
         // After a failed video or a fatal hls.js error, a new play request loads the video again
         reloadAfterFailure() {
             if (!this.failed || !this.src) return;
+            // A pending load() would load the source a second time
+            clearTimeout(this.loadTimer);
+            this.loadTimer = null;
+            this.hide();
             this.failed = false;
             this.isReady = false;
             if (this.usesHls) {

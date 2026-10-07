@@ -277,6 +277,54 @@ describe('hls', () => {
         expect(wrapper.emitted('playing')).toHaveLength(1);
     });
 
+    it('does not end the wait of play() early when the old play() of a failed stream fails', async () => {
+        const plays = [];
+        HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve, reject) => {
+            plays.push({ resolve, reject });
+        }));
+        const { Hls, instances } = fakeHls();
+        const wrapper = mountBackground({ src: stream, hls: Hls });
+        await makeReady(wrapper);
+        expect(plays).toHaveLength(1);
+        instances[0].fail(fatal);
+        await flushPromises();
+        let resolved = false;
+
+        wrapper.vm.player.play().then(() => {
+            resolved = true;
+        });
+        // The new load interrupts the old play() of the browser
+        plays[0].reject(new DOMException('interrupted', 'AbortError'));
+        await flushPromises();
+        expect(resolved).toBe(false);
+
+        await makeReady(wrapper);
+        plays[1].resolve();
+        await flushPromises();
+        expect(resolved).toBe(true);
+    });
+
+    it('starts hls.js once when a play after a fatal error comes while the next source waits to load', async () => {
+        vi.useFakeTimers();
+        window.innerWidth = 1200;
+        const { Hls, instances } = fakeHls();
+        const wrapper = mountBackground({
+            src: stream, sources: hlsSources, hls: Hls, pauseButton: true,
+        });
+
+        await resizeTo(500);
+        instances[0].fail(fatal);
+        await flushPromises();
+        await buttonOf(wrapper).trigger('click');
+        vi.advanceTimersByTime(1000);
+        await flushPromises();
+
+        expect(instances).toHaveLength(2);
+        expect(instances[1].loadSource).toHaveBeenCalledWith('/videos/mobile.m3u8');
+        expect(instances[1].destroy).not.toHaveBeenCalled();
+        expect(wrapper.emitted('loading')).toHaveLength(1);
+    });
+
     it('reports a fatal error that hls.js raises inside loadSource()', async () => {
         const { Hls, instances } = fakeHls({ failInLoadSource: { ...fatal, details: 'manifestParsingError' } });
 

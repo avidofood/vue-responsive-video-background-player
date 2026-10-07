@@ -121,10 +121,13 @@ export default {
         },
     },
     watch: {
-        videoSrc(newSrc, oldSrc) {
+        videoSrc() {
             this.videoReady = false;
-            // Another video: a choice through the player was for the old one
-            if (oldSrc && !this.choiceStays) this.choice = null;
+        },
+        // Another video, also while it waits for lazy loading: a choice through the player was
+        // for the old one
+        'current.src': function currentSrc() {
+            if (!this.choiceStays) this.choice = null;
         },
         visible(visible) {
             if (visible) {
