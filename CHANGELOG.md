@@ -2,6 +2,38 @@
 
 This file lists the changes of version 2.x (Vue 3). Version 1.x (Vue 2) is on the `1x` branch.
 
+## 2.6.0
+
+All new options are off by default. Without them, the component works as in 2.5.1.
+
+### Added
+
+- `pauseButton`: a button that pauses and plays the video, for [WCAG 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html) (Pause, Stop, Hide). It is a native button, first in the tab order inside the section. Its label changes between `pauseLabel` and `playLabel`. The `pause-button` slot replaces the icon. A pause with the button stays when the window switches to another source.
+- `respectReducedMotion`: if the user prefers reduced motion, only the poster shows, and the video does not load. The play button or `play()` starts it.
+- `pauseWhenHidden`: pauses the video while it is off screen or the page is in the background. It plays again when it is visible. A video that the user paused stays paused.
+- `lazy`: loads the video when the section comes within 200px of the viewport.
+- `keepLargerSource`: a smaller window keeps a larger video that already loads ([#14](https://github.com/avidofood/vue-responsive-video-background-player/issues/14)).
+- `hls` and `hlsConfig`: give the component the `Hls` class of hls.js ([#44](https://github.com/avidofood/vue-responsive-video-background-player/issues/44)). Where the browser supports hls.js, hls.js plays the HLS streams. Elsewhere, the browser plays them itself, as before. The package does not include hls.js.
+- `player.video`: the `<video>` element ([#30](https://github.com/avidofood/vue-responsive-video-background-player/issues/30)).
+- `vue-responsive-video-background-player/style.css`: the CSS as a file, for server-side rendering and for a strict Content Security Policy. The JavaScript still injects the CSS. A type declaration comes with the file, because TypeScript 6 checks side-effect imports.
+- `play()` on a video that waits because of `lazy` or `respectReducedMotion` loads it first. Its promise resolves when the video plays.
+- `play()` and the pause button load a video again that failed to load, for example after a fatal hls.js error.
+
+### Fixed
+
+- `pause()` and `stop()` before the video is ready keep it paused. Before, autoplay started it when it was ready. After a switch to another source, the autoplay of that source decides again, as before.
+- `play()` before the video is ready plays it when it is ready, also with `autoplay` set to false. Before, the video stayed paused.
+
+### Changed
+
+- The README shows how to show only the poster on small screens: a source with an empty `src` loads no video.
+- The tests unmount every component after each test.
+- The tests use jsdom 30. The development tools need Node.js 22.22.2, 24.15.0 or 26 or newer. The published files have no Node.js requirement.
+- Linting uses ESLint 10 and eslint-config-avidofood 5. The lint results do not change.
+- The development tools stay on TypeScript 5.9: vue-tsc 3.3 does not run with TypeScript 7, because TypeScript 7 no longer ships the JavaScript API of the compiler. The types of the package are tested with TypeScript 5.9, 6.0 and 7.0.
+- The ESM file grows from 9.9 kB to 19 kB (gzip: from 3.4 kB to 5.7 kB).
+- An independent review by Codex (gpt-6-astra) found problems in the new code before the release. They are fixed and have tests.
+
 ## 2.5.1
 
 ### Fixed

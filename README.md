@@ -72,7 +72,15 @@ export default defineNuxtPlugin((nuxtApp) => {
 
 Then use the `<video-background>` tag in any page. The server renders the section, the poster, the overlay and your slot content. The server does not know the window width, so the browser adds the video after hydration.
 
-The component injects its CSS with JavaScript. Until the JavaScript runs, the page shows the server HTML without these styles. If you prefer to render the component only in the browser, name the plugin file `video-background.client.ts` and wrap the component in `<ClientOnly>`:
+The component injects its CSS with JavaScript. Until the JavaScript runs, the page shows the server HTML without these styles. Since version 2.6.0, add the CSS file to `nuxt.config.ts`. Then the server HTML has its styles from the start, and the poster shows before the JavaScript runs:
+
+```javascript
+export default defineNuxtConfig({
+    css: ['vue-responsive-video-background-player/style.css'],
+});
+```
+
+If you prefer to render the component only in the browser, name the plugin file `video-background.client.ts` and wrap the component in `<ClientOnly>`:
 
 ```html
 <ClientOnly>
@@ -159,7 +167,7 @@ This is your path to your video. You can just use this value for showing your vi
 
 The component sets the `type` attribute of the video for `.mp4`, `.m4v`, `.webm`, `.ogv`, `.ogg` and `.m3u8` files. For other URLs, for example a URL without a file extension, it sets no type, and the browser checks the file itself.
 
- >**HLS** (`.m3u8`): Safari, iOS and some other browsers play HLS streams natively. The component does not include [hls.js](https://github.com/video-dev/hls.js), so other browsers do not play the stream.
+ >**HLS** (`.m3u8`): Safari, iOS and some other browsers play HLS streams natively. For the other browsers, give the component [hls.js](https://github.com/video-dev/hls.js) with the `hls` prop. See [HLS streams](#hls-streams).
 
 - `poster` (default: `''`)
 
@@ -245,12 +253,155 @@ The `fade` transition takes one second. For a different duration, give the trans
 </style>
 ```
 
+- `pauseButton` (default: `false`)
+
+Shows a button that pauses and plays the video. See [Pause button and accessibility](#pause-button-and-accessibility).
+
+- `pauseLabel` (default: `'Pause background video'`) and `playLabel` (default: `'Play background video'`)
+
+The accessible names of the pause button. Screen readers read them. Set them for other languages.
+
+- `respectReducedMotion` (default: `false`)
+
+If the user turned on "reduce motion" in the system settings, the component shows only the poster and does not load the video.
+
+- `pauseWhenHidden` (default: `false`)
+
+Pauses the video while it is off screen or the page is in the background. See [Less loading and less work](#less-loading-and-less-work).
+
+- `lazy` (default: `false`)
+
+Loads the video when the section comes within 200px of the viewport.
+
+- `keepLargerSource` (default: `false`)
+
+If the window gets smaller, the component keeps a larger video that already loads, and does not load the smaller one ([#14](https://github.com/avidofood/vue-responsive-video-background-player/issues/14)).
+
+- `hls` (default: `null`) and `hlsConfig` (default: `undefined`)
+
+The `Hls` class of hls.js and the options for `new Hls()`. See [HLS streams](#hls-streams).
+
+## Pause button and accessibility
+
+A background video that plays for more than five seconds needs a way to pause it. This is [WCAG 2.2, success criterion 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html) (Level A). It applies to decorative videos too. Set `pause-button` for this:
+
+```html
+<video-background
+    src="/videos/hero.mp4"
+    poster="/images/hero.jpg"
+    pause-button
+    respect-reduced-motion
+>
+    <h1>Hello welcome!</h1>
+</video-background>
+```
+
+The button:
+
+- is a native `<button>`, so it works with the keyboard and with screen readers
+- comes before your content, so it is first in the tab order inside the section
+- changes its label between `pauseLabel` and `playLabel`
+- shows "play" when the browser blocked autoplay, for example on iOS in Low Power Mode. A tap on it then starts the video
+- shows "play" when the video failed to load. A tap on it loads the video again
+- keeps the video paused when the window switches to another source
+
+The button sits in the bottom right corner. Its styles use the selector `button.videobg-pause-button`, so CSS resets of Bootstrap or Tailwind do not change them. A selector with two classes overrides them, for example with a class on the component:
+
+```html
+<video-background class="hero" src="/videos/hero.mp4" pause-button />
+```
+
+```css
+.hero .videobg-pause-button {
+    top: 16px;
+    bottom: auto;
+}
+```
+
+In a `<style scoped>` block, write `.hero :deep(.videobg-pause-button)` instead.
+
+To use your own icon, fill the `pause-button` slot. The slot gets `paused`. The label stays on the button, so put only an icon in the slot:
+
+```html
+<video-background src="/videos/hero.mp4" pause-button>
+    <template #pause-button="{ paused }">
+        <my-icon :name="paused ? 'play' : 'pause'" />
+    </template>
+</video-background>
+```
+
+`respect-reduced-motion` follows the [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting of the user. With "reduce motion" on, only the poster shows, and the video does not load. The pause button then offers "play". If the user turns the setting on while the video plays, the video pauses. This is good practice, but it does not replace the pause button.
+
+## Less loading and less work
+
+- `lazy` loads the video when the section comes within 200px of the viewport. Until then, the poster shows. For a video at the top of the page, `lazy` brings nothing.
+- `pause-when-hidden` pauses the video while it is off screen or the page is in the background. It plays again when the user sees it. Browsers do not do this themselves for a video that starts with `play()`. A video that the user paused stays paused.
+- `keep-larger-source` keeps a larger video when the window gets smaller, for example when a phone turns from landscape to portrait.
+
+To show only the poster on small screens, give that source an empty `src`. The component then loads no video for these windows:
+
+```html
+<video-background
+    src="/videos/hero.mp4"
+    poster="/images/hero.jpg"
+    :sources="[{ src: '', res: 638, autoplay: false, poster: '/images/hero-mobile.jpg' }]"
+/>
+```
+
+## HLS streams
+
+Safari and iOS play HLS streams (`.m3u8`) themselves. Other browsers need [hls.js](https://github.com/video-dev/hls.js). The component does not include hls.js. Install it and give the `Hls` class to the component:
+
+```bash
+npm install hls.js
+```
+
+```vue
+<script setup>
+import Hls from 'hls.js';
+import VideoBackground from 'vue-responsive-video-background-player';
+</script>
+
+<template>
+    <video-background
+        src="https://example.com/hero.m3u8"
+        poster="/images/hero.jpg"
+        :hls="Hls"
+        :hls-config="{ maxBufferLength: 10 }"
+    />
+</template>
+```
+
+If the browser supports hls.js, hls.js plays the stream, also in Safari. This is the [recommendation of hls.js](https://github.com/video-dev/hls.js#embedding-hlsjs). Otherwise, for example on iPhones before iOS 17.1, the browser plays the stream itself. A `sources` entry can also be an HLS stream.
+
+You can also load hls.js later, for example with `import('hls.js')`, and set the prop when it arrives. Until then, the browser tries to play the stream itself. A browser without HLS support emits `error` for that try. Then the component starts hls.js.
+
+If hls.js stops with a fatal error, the poster stays, and the component emits `error` with a `CustomEvent`. Its `detail` holds the [error data of hls.js](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors).
+
+## CSS file
+
+The component injects its CSS with JavaScript. Since version 2.6.0, the package also contains the CSS as a file:
+
+```javascript
+import 'vue-responsive-video-background-player/style.css';
+```
+
+Use the file in two cases:
+
+- With server-side rendering, the server HTML has its styles before the JavaScript runs. For Nuxt, see [Nuxt 3 and Nuxt 4](#nuxt-3-and-nuxt-4).
+- With a Content Security Policy that blocks injected `<style>` elements, the styles still apply. The browser still reports the blocked `<style>` element.
+
+## Slots
+
+- default: your content on top of the video
+- `pause-button`: the icon of the pause button. It gets `paused` (`true` while the video does not play).
+
 ## Events 
 
 - `ready`: Video is loaded. The event fires once for each video that loads.
 - `playing`: Video is playing
 - `paused`: Video is paused
-- `error`: The video failed, for example because the file is missing, or the browser blocked playback. The event carries the error event of the video or the error of `play()`. The poster stays visible.
+- `error`: The video failed, for example because the file is missing, or the browser blocked playback. The event carries the error event of the video or the error of `play()`. For a fatal hls.js error, it carries a `CustomEvent` with the error data of hls.js in `detail`. The poster stays visible.
 - `loading`: A new video is loading, for example after a resize
 - `ended`: Video finished. This event fires only with `loop` set to false.
 
@@ -258,16 +409,19 @@ The `fade` transition takes one second. For a different duration, give the trans
 
 If you happen to need more control over the player, you can use the internal methods. For that, you need to set `ref=videobackground` to the HTML tag `<video-background>`. After that you can call all methods like this `this.$refs.videobackground.player.play()`.
 
-- `play()`: Plays the video and returns a promise. The promise resolves after playback starts or after the browser blocks it.
+- `play()`: Plays the video and returns a promise. The promise resolves after playback starts or after the browser blocks it. If the video waits because of `lazy` or `respectReducedMotion`, or if it failed to load, `play()` loads it first.
 - `pause()`: Pauses the video
 - `stop()`: Pauses the video and goes back to the start. Call `play()` to start it again.
 - `show()`: Shows the video
 - `hide()`: Hides the video and shows the poster
 - `load()`: Hides the video and loads it again after one second
+- `video`: The `<video>` element, for example `this.$refs.videobackground.player.video`
+
+`play()`, `pause()` and `stop()` count for the current video, also before it is ready. If the window switches to another source, the autoplay of that source decides again. A choice with the pause button stays.
  
 ## Development
 
-You need Node.js 22.12 or newer (see `.nvmrc`).
+You need Node.js 22.22.2 or newer on the 22 line, 24.15.0 or newer on the 24 line, or Node.js 26 or newer (see `.nvmrc`). jsdom 30, which the tests use, needs these versions.
 
 ```bash
 npm install

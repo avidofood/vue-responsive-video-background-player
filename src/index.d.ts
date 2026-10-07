@@ -14,6 +14,21 @@ export interface VideoBackgroundSource {
     poster?: string;
 }
 
+/** The parts of an hls.js instance that the component uses. */
+export interface VideoBackgroundHlsInstance {
+    loadSource(url: string): void;
+    attachMedia(media: HTMLMediaElement): void;
+    destroy(): void;
+    on(event: any, listener: (event: any, data: any) => void): void;
+}
+
+/** The Hls class of hls.js, for example from `import Hls from 'hls.js'`. */
+export interface VideoBackgroundHls {
+    new (config?: any): VideoBackgroundHlsInstance;
+    isSupported(): boolean;
+    readonly Events: { readonly ERROR: string };
+}
+
 export interface VideoBackgroundProps {
     /** Path or URL of the default video. */
     src: string;
@@ -43,11 +58,34 @@ export interface VideoBackgroundProps {
     playbackRate?: number;
     /** Name of the transition that shows the video. Default: 'fade'. */
     transition?: string;
+    /** Shows a button that pauses and plays the video (WCAG 2.2.2). Default: false. */
+    pauseButton?: boolean;
+    /** Accessible name of the button while the video plays. Default: 'Pause background video'. */
+    pauseLabel?: string;
+    /** Accessible name of the button while the video is paused. Default: 'Play background video'. */
+    playLabel?: string;
+    /** Shows only the poster when the user prefers reduced motion. Default: false. */
+    respectReducedMotion?: boolean;
+    /** Pauses the video while it is off screen or the page is hidden. Default: false. */
+    pauseWhenHidden?: boolean;
+    /** Loads the video when the section comes near the viewport. Default: false. */
+    lazy?: boolean;
+    /** Keeps a larger video that already loads when the window gets smaller. Default: false. */
+    keepLargerSource?: boolean;
+    /** The Hls class of hls.js. With it, HLS streams play in browsers without native HLS. */
+    hls?: VideoBackgroundHls | null;
+    /** Options for `new Hls()`. */
+    hlsConfig?: object;
 }
 
 /** The internal player. Get it from the `player` property of the component. */
 export interface VideoBackgroundPlayer {
-    /** Plays the video. The promise resolves when the video plays or the browser blocks it. */
+    /** The `<video>` element. */
+    readonly video: HTMLVideoElement;
+    /**
+     * Plays the video. The promise resolves when the video plays or the browser blocks it.
+     * A video that waits (lazy, respectReducedMotion) or that failed to load loads first.
+     */
     play(): Promise<void>;
     pause(): void;
     /** Pauses the video and goes back to the start. */
@@ -64,7 +102,10 @@ export type VideoBackgroundEmits = {
     ready: () => void;
     playing: () => void;
     paused: () => void;
-    /** An error event of the video, or the error when the browser blocks playback. */
+    /**
+     * An error event of the video, or the error when the browser blocks playback.
+     * For a fatal hls.js error, a CustomEvent with the error data of hls.js in `detail`.
+     */
     error: (reason: Event | DOMException) => void;
     loading: () => void;
     ended: () => void;
@@ -89,6 +130,15 @@ type VideoBackgroundPropOptions = {
     playsWhen: { type: PropType<string>; default: string };
     playbackRate: { type: PropType<number>; default: number };
     transition: { type: PropType<string>; default: string };
+    pauseButton: { type: PropType<boolean>; default: boolean };
+    pauseLabel: { type: PropType<string>; default: string };
+    playLabel: { type: PropType<string>; default: string };
+    respectReducedMotion: { type: PropType<boolean>; default: boolean };
+    pauseWhenHidden: { type: PropType<boolean>; default: boolean };
+    lazy: { type: PropType<boolean>; default: boolean };
+    keepLargerSource: { type: PropType<boolean>; default: boolean };
+    hls: { type: PropType<VideoBackgroundHls | null>; default: null };
+    hlsConfig: { type: PropType<object> };
 };
 
 declare const VideoBackground: DefineComponent<

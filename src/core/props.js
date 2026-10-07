@@ -63,5 +63,38 @@ export default {
         type: String,
         default: '',
     },
+    // A button that pauses and plays the video (WCAG 2.2.2)
+    pauseButton: {
+        type: Boolean,
+        default: false,
+    },
+    pauseLabel: {
+        type: String,
+        default: 'Pause background video',
+    },
+    playLabel: {
+        type: String,
+        default: 'Play background video',
+    },
+    // With prefers-reduced-motion: reduce, only the poster shows
+    respectReducedMotion: {
+        type: Boolean,
+        default: false,
+    },
+    // Pauses the video while it is off screen or the page is in the background
+    pauseWhenHidden: {
+        type: Boolean,
+        default: false,
+    },
+    // Loads the video when the section comes near the viewport
+    lazy: {
+        type: Boolean,
+        default: false,
+    },
+    // A smaller window keeps the larger video that already loads
+    keepLargerSource: {
+        type: Boolean,
+        default: false,
+    },
     ...playerProps,
 };

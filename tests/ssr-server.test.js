@@ -33,3 +33,36 @@ describe('server-side rendering', () => {
         expect(html).not.toContain('.mp4');
     });
 });
+
+describe('server-side rendering of the 2.6 options', () => {
+    it('renders the pause button and no source with all new options', async () => {
+        class Hls {
+            static isSupported() {
+                throw new Error('The server must not ask hls.js');
+            }
+        }
+
+        const html = await render({
+            sources,
+            pauseButton: true,
+            respectReducedMotion: true,
+            pauseWhenHidden: true,
+            lazy: true,
+            keepLargerSource: true,
+            hls: Hls,
+            src: '/videos/hero.m3u8',
+        });
+
+        expect(html).toContain('<button type="button" class="videobg-pause-button"');
+        expect(html).toContain('aria-label="Pause background video"');
+        expect(html).not.toContain('<source');
+        // The button comes before the content
+        expect(html.indexOf('videobg-pause-button')).toBeLessThan(html.indexOf('videobg-content'));
+    });
+
+    it('renders the play label when autoplay is off', async () => {
+        const html = await render({ pauseButton: true, autoplay: false });
+
+        expect(html).toContain('aria-label="Play background video"');
+    });
+});

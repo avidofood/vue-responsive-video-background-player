@@ -40,4 +40,14 @@ export default {
         type: String,
         default: 'fade',
     },
+    // The Hls class of hls.js. The component does not include hls.js
+    hls: {
+        type: Function,
+        default: null,
+    },
+    // Options for new Hls()
+    hlsConfig: {
+        type: Object,
+        default: undefined,
+    },
 };
