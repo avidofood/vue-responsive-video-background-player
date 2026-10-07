@@ -89,13 +89,18 @@ export default {
         },
         play() {
             this.setPlaybackRate();
+            this.playRequest = (this.playRequest || 0) + 1;
+            const request = this.playRequest;
             // Old browsers return nothing instead of a promise
             return Promise.resolve(this.$refs.video.play())
                 .then(() => {
+                    // hide() or a newer play() made this request obsolete
+                    if (request !== this.playRequest) return;
                     this.show();
                     this.$emit('playing');
                 })
                 .catch((error) => {
+                    if (request !== this.playRequest) return;
                     // A new load() interrupted play(). The next ready event plays the new video
                     if (error && error.name === 'AbortError') return;
                     // The browser blocked playback, for example iOS in Low Power Mode.
@@ -108,11 +113,16 @@ export default {
             this.showVideo = true;
         },
         hide() {
+            // A play() that is still pending must not show the video again
+            this.playRequest = (this.playRequest || 0) + 1;
             this.showVideo = false;
         },
         getMediaType(src) {
             const extension = src.split(/[?#]/)[0].split('.').pop().toLowerCase();
-            return mediaTypes[extension];
+            // Own properties only: ".constructor" must not find Object.prototype.constructor
+            return Object.prototype.hasOwnProperty.call(mediaTypes, extension)
+                ? mediaTypes[extension]
+                : undefined;
         },
         videoCanPlay() {
             return !!this.$refs.video.canPlayType;
