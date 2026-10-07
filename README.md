@@ -304,16 +304,20 @@ The button:
 - shows "play" when the browser blocked autoplay, for example on iOS in Low Power Mode. A tap on it then starts the video
 - keeps the video paused when the window switches to another source
 
-The button sits in the bottom right corner. Its styles have no specificity, so a plain CSS rule changes them:
+The button sits in the bottom right corner. Its styles use the selector `button.videobg-pause-button`, so CSS resets of Bootstrap or Tailwind do not change them. A selector with two classes overrides them, for example with a class on the component:
+
+```html
+<video-background class="hero" src="/videos/hero.mp4" pause-button />
+```
 
 ```css
-.videobg-pause-button {
+.hero .videobg-pause-button {
     top: 16px;
     bottom: auto;
 }
 ```
 
-In a `<style scoped>` block, write `:deep(.videobg-pause-button)` instead.
+In a `<style scoped>` block, write `.hero :deep(.videobg-pause-button)` instead.
 
 To use your own icon, fill the `pause-button` slot. The slot gets `paused`. The label stays on the button, so put only an icon in the slot:
 

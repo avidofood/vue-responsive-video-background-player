@@ -266,8 +266,15 @@ export default {
         width: 100%;
         height: 100%;
     }
-    /* :where() has no specificity, so that your own CSS for the button always wins */
-    :where(.videobg-pause-button){
+
+</style>
+
+<!--
+    Not scoped: button.videobg-pause-button beats CSS resets such as button {} or [type='button'] {}
+    of Bootstrap and Tailwind, and your selector with two classes beats it.
+-->
+<style>
+    button.videobg-pause-button{
         position: absolute;
         right: 16px;
         bottom: 16px;
@@ -286,15 +293,14 @@ export default {
         cursor: pointer;
     }
     /* White and black rings, so that the focus shows on light and dark videos */
-    :where(.videobg-pause-button):focus-visible{
+    button.videobg-pause-button:focus-visible{
         outline: 2px solid #fff;
         outline-offset: 2px;
         box-shadow: 0 0 0 6px #000;
     }
-    :where(.videobg-pause-icon){
+    svg.videobg-pause-icon{
         width: 20px;
         height: 20px;
         fill: currentColor;
     }
-
 </style>
