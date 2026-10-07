@@ -266,7 +266,8 @@ export default {
         width: 100%;
         height: 100%;
     }
-    .vue-responsive-videobg .videobg-pause-button{
+    /* :where() has no specificity, so that your own CSS for the button always wins */
+    :where(.videobg-pause-button){
         position: absolute;
         right: 16px;
         bottom: 16px;
@@ -285,12 +286,12 @@ export default {
         cursor: pointer;
     }
     /* White and black rings, so that the focus shows on light and dark videos */
-    .vue-responsive-videobg .videobg-pause-button:focus-visible{
+    :where(.videobg-pause-button):focus-visible{
         outline: 2px solid #fff;
         outline-offset: 2px;
         box-shadow: 0 0 0 6px #000;
     }
-    .vue-responsive-videobg .videobg-pause-icon{
+    :where(.videobg-pause-icon){
         width: 20px;
         height: 20px;
         fill: currentColor;
