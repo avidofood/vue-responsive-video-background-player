@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [22, 24]
+        # jsdom 30 needs Node.js ^22.22.2, ^24.15.0 or >=26. setup-node installs the newest release
+        # of each line
+        node: [22, 24, 26]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

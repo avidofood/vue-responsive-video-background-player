@@ -421,7 +421,7 @@ If you happen to need more control over the player, you can use the internal met
  
 ## Development
 
-You need Node.js 22.12 or newer (see `.nvmrc`).
+You need Node.js 22.22.2 or newer on the 22 line, 24.15.0 or newer on the 24 line, or Node.js 26 or newer (see `.nvmrc`). jsdom 30, which the tests use, needs these versions.
 
 ```bash
 npm install

@@ -28,6 +28,8 @@ All new options are off by default. Without them, the component works as in 2.5.
 
 - The README shows how to show only the poster on small screens: a source with an empty `src` loads no video.
 - The tests unmount every component after each test.
+- The tests use jsdom 30. The development tools need Node.js 22.22.2, 24.15.0 or 26 or newer. The published files have no Node.js requirement.
+- The development tools stay on TypeScript 5.9: vue-tsc 3.3 does not run with TypeScript 7, because TypeScript 7 no longer ships the JavaScript API of the compiler. The types of the package are tested with TypeScript 5.9, 6.0 and 7.0.
 - The ESM file grows from 9.9 kB to 19 kB (gzip: from 3.4 kB to 5.7 kB).
 - An independent review by Codex (gpt-6-astra) found problems in the new code before the release. They are fixed and have tests.
 
