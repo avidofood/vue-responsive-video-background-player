@@ -57,6 +57,23 @@ const types = () => ({
     },
 });
 
+// The CSS also goes into style.css, for example for the server-rendered HTML or a strict CSP.
+// The JS still injects the CSS, as before
+const styleFile = 'style.css';
+const style = () => ({
+    name: 'style',
+    // After the CSS of Vite, before cssInjectedByJsPlugin removes it from the bundle
+    enforce: 'post',
+    generateBundle({ format }, bundle) {
+        if (format !== 'es') return;
+        const css = Object.values(bundle)
+            .filter((file) => file.type === 'asset' && file.fileName.endsWith('.css'))
+            .map((file) => file.source)
+            .join('\n');
+        this.emitFile({ type: 'asset', fileName: styleFile, source: css });
+    },
+});
+
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
     if (command === 'build' && builds[mode] === undefined) {
@@ -67,7 +84,10 @@ export default defineConfig(({ command, mode }) => {
         build: builds[mode],
         plugins: [
             vue(),
-            cssInjectedByJsPlugin(),
+            mode === 'dist' && style(),
+            cssInjectedByJsPlugin({
+                cssAssetsFilterFunction: (asset) => asset.fileName !== styleFile,
+            }),
             mode === 'dist' && types(),
         ],
         test: {
