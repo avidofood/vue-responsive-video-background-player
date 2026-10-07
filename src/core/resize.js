@@ -50,10 +50,10 @@ export default {
     },
     beforeMount() {
         // While Vue hydrates server-rendered HTML, the vnode already holds the element from the
-        // server. Vue uses the same check. The first render must then match the server, so the
-        // measurement waits until mounted. ($el is no help here: in dev builds it is null.)
-        const serverElement = this.$.vnode.el;
-        if (!serverElement || !serverElement.isConnected) {
+        // server, also in a container outside the document. Vue uses the same check. The first
+        // render must then match the server, so the measurement waits until mounted.
+        // ($el is no help here: in dev builds it is null.)
+        if (!this.$.vnode.el) {
             this._change_video_resolution();
         }
     },

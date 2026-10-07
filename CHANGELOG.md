@@ -2,6 +2,21 @@
 
 This file lists the changes of version 2.x (Vue 3). Version 1.x (Vue 2) is on the `1x` branch.
 
+## 2.5.1
+
+### Fixed
+
+- A pending `play()` no longer shows the previous video after a source switch, for example after a resize. Before, the late promise showed the old video again and emitted `playing`.
+- `pause()` and `stop()` cancel a pending `play()`. Before, the video showed up and the component emitted `playing` after the pause.
+- Hydration of server-rendered HTML in a container outside the document no longer causes a hydration mismatch.
+- With Vue 3.2, the types now require `src`. Before, a missing `src` compiled without an error.
+- A URL that ends in `.constructor` or `.__proto__` gets no `type` attribute. Before, it got an invalid type, and the browser skipped the video.
+
+### Changed
+
+- Linting uses ESLint 9 and eslint-config-avidofood 4. This fixes the last Dependabot alert (`postcss-selector-parser`, dev only). The published files do not change.
+- An independent review by Codex (gpt-6-astra) found these problems in 2.5.0.
+
 ## 2.5.0
 
 ### Added

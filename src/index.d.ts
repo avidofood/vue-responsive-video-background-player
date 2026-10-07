@@ -1,4 +1,6 @@
-import type { ComponentOptionsMixin, DefineComponent, Plugin as VuePlugin } from 'vue';
+import type {
+    ComponentOptionsMixin, DefineComponent, Plugin as VuePlugin, PropType,
+} from 'vue';
 
 /** A video for all windows up to `res` pixels wide. */
 export interface VideoBackgroundSource {
@@ -68,8 +70,29 @@ export type VideoBackgroundEmits = {
     ended: () => void;
 };
 
+/**
+ * The props as runtime options, like in the component. Vue 3.2 reads required props only from
+ * this form, not from a plain interface.
+ */
+type VideoBackgroundPropOptions = {
+    src: { type: PropType<string>; required: true };
+    sources: { type: PropType<VideoBackgroundSource[]>; default: () => VideoBackgroundSource[] };
+    autoplay: { type: PropType<boolean>; default: boolean };
+    poster: { type: PropType<string>; default: string };
+    overlay: { type: PropType<string>; default: string };
+    muted: { type: PropType<boolean>; default: boolean };
+    loop: { type: PropType<boolean>; default: boolean };
+    preload: { type: PropType<string>; default: string };
+    objectFit: { type: PropType<string>; default: string };
+    objectPosition: { type: PropType<string>; default: string };
+    posterBgSize: { type: PropType<string>; default: string };
+    playsWhen: { type: PropType<string>; default: string };
+    playbackRate: { type: PropType<number>; default: number };
+    transition: { type: PropType<string>; default: string };
+};
+
 declare const VideoBackground: DefineComponent<
-    VideoBackgroundProps,
+    VideoBackgroundPropOptions,
     {},
     {},
     { player: () => VideoBackgroundPlayer },

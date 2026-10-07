@@ -67,6 +67,7 @@ export default {
     methods: {
         pause() {
             if (this.$refs.video) {
+                this.cancelPlayRequest();
                 this.$refs.video.pause();
                 this.$emit('paused');
             }
@@ -89,13 +90,18 @@ export default {
         },
         play() {
             this.setPlaybackRate();
+            this.cancelPlayRequest();
+            const request = this.playRequest;
             // Old browsers return nothing instead of a promise
             return Promise.resolve(this.$refs.video.play())
                 .then(() => {
+                    // pause(), hide() or a newer play() made this request obsolete
+                    if (request !== this.playRequest) return;
                     this.show();
                     this.$emit('playing');
                 })
                 .catch((error) => {
+                    if (request !== this.playRequest) return;
                     // A new load() interrupted play(). The next ready event plays the new video
                     if (error && error.name === 'AbortError') return;
                     // The browser blocked playback, for example iOS in Low Power Mode.
@@ -108,11 +114,19 @@ export default {
             this.showVideo = true;
         },
         hide() {
+            this.cancelPlayRequest();
             this.showVideo = false;
+        },
+        // A play() that is still pending must not show the video or emit playing afterwards
+        cancelPlayRequest() {
+            this.playRequest = (this.playRequest || 0) + 1;
         },
         getMediaType(src) {
             const extension = src.split(/[?#]/)[0].split('.').pop().toLowerCase();
-            return mediaTypes[extension];
+            // Own properties only: ".constructor" must not find Object.prototype.constructor
+            return Object.prototype.hasOwnProperty.call(mediaTypes, extension)
+                ? mediaTypes[extension]
+                : undefined;
         },
         videoCanPlay() {
             return !!this.$refs.video.canPlayType;

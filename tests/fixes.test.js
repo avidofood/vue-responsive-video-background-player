@@ -21,11 +21,16 @@ describe('resize listener', () => {
 
 describe('sources prop', () => {
     it('does not change the order of the sources array', () => {
-        const unsorted = [...sources];
+        // A fresh array in descending order, so an in-place sort would change it
+        const unsorted = [
+            { src: '/videos/tablet.mp4', res: 991, autoplay: true },
+            { src: '/videos/mobile.mp4', res: 575, autoplay: true },
+        ];
+        const snapshot = JSON.parse(JSON.stringify(unsorted));
         window.innerWidth = 500;
         mountBackground({ sources: unsorted });
 
-        expect(unsorted).toEqual(sources);
+        expect(unsorted).toEqual(snapshot);
     });
 });
 
@@ -86,6 +91,41 @@ describe('autoplay blocked by the browser', () => {
 
         expect(wrapper.emitted('playing')).toBeUndefined();
         expect(wrapper.emitted('error')).toBeUndefined();
+    });
+
+    it('does not show the old video when its play() resolves after a source switch', async () => {
+        let resolvePlay;
+        HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve) => {
+            resolvePlay = resolve;
+        }));
+        const wrapper = mountBackground();
+        await makeReady(wrapper);
+
+        await wrapper.setProps({ src: '/videos/other.mp4' });
+        resolvePlay();
+        await flushPromises();
+
+        expect(videoIsShown(wrapper)).toBe(false);
+        expect(wrapper.emitted('playing')).toBeUndefined();
+        wrapper.unmount();
+    });
+
+    it.each(['pause', 'stop'])('does not show the video when %s() comes before play() resolved', async (method) => {
+        let resolvePlay;
+        HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve) => {
+            resolvePlay = resolve;
+        }));
+        const wrapper = mountBackground({ autoplay: false });
+        await makeReady(wrapper);
+
+        wrapper.vm.player.play();
+        wrapper.vm.player[method]();
+        resolvePlay();
+        await flushPromises();
+
+        expect(videoIsShown(wrapper)).toBe(false);
+        expect(wrapper.emitted('playing')).toBeUndefined();
+        expect(wrapper.emitted('paused')).toHaveLength(1);
     });
 
     it('emits playing only after play() resolved', async () => {
@@ -181,6 +221,9 @@ describe('media type of the source', () => {
         'https://cdn.example.com/videos/12345?format=hd',
         '/videos/a.mov',
         'blob:https://example.com/0c2b1b7e',
+        '/videos/a.constructor',
+        '/videos/a.toString',
+        '/videos/a.__proto__',
     ])('sets no type for %s, so that the browser decides', (src) => {
         const wrapper = mountBackground({ src });
 

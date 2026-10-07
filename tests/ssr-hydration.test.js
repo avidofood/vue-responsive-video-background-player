@@ -38,6 +38,21 @@ describe('hydration', () => {
         expect(messages).not.toMatch(/mismatch/i);
     });
 
+    it('hydrates a container outside the document without a mismatch', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        window.innerWidth = 1200;
+        const container = document.createElement('div');
+        container.innerHTML = await renderToString(app());
+
+        app().mount(container);
+        await flushPromises();
+
+        const messages = [...warn.mock.calls, ...error.mock.calls].flat().join('\n');
+        expect(messages).not.toMatch(/mismatch/i);
+        expect(container.querySelector('source').getAttribute('src')).toBe('/videos/desktop.mp4');
+    });
+
     it.each([
         [1200, '/videos/desktop.mp4', '/images/poster.jpg'],
         [800, '/videos/tablet.mp4', '/images/poster.jpg'],

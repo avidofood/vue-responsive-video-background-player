@@ -1,6 +1,6 @@
 {
   "name": "vue-responsive-video-background-player",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Play your own videos in background responsively",
   "type": "commonjs",
   "main": "./dist/vue-responsive-video-background-player.umd.js",
@@ -25,7 +25,7 @@
     "build:dist": "vite build --mode dist",
     "build:demo": "vite build --mode demo",
     "build": "npm run build:dist && npm run build:demo",
-    "lint": "eslint --ext .js,.vue src demo/resources tests vite.config.mjs",
+    "lint": "eslint .",
     "test": "vitest run && npm run test:types",
     "test:types": "tsc -p tests/types",
     "prepack": "npm run build:dist"
@@ -71,10 +71,8 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.9",
     "@vue/test-utils": "^2.5.1",
-    "eslint": "^8.57.1",
-    "eslint-config-avidofood": "^3.2.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-vue": "^9.33.0",
+    "eslint": "^9.39.5",
+    "eslint-config-avidofood": "^4.0.0",
     "jsdom": "^29.1.1",
     "typescript": "^5.9.3",
     "vite": "^8.3.3",
