@@ -1,0 +1,83 @@
+name: Release
+
+# Publishes the package to npm when a version tag such as 2.5.2 is pushed.
+# npm trusts this workflow (trusted publishing with OIDC), so there is no npm token and no 2FA prompt.
+# Run the workflow by hand to check the trusted publisher setup. That run publishes nothing.
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Check the npm version
+        # Trusted publishing needs npm 11.5.1 or newer
+        run: |
+          npm --version
+          node -e "const [a, b, c] = process.argv[1].split('.').map(Number); process.exit(a > 11 || (a === 11 && (b > 5 || (b === 5 && c >= 1))) ? 0 : 1)" "$(npm --version)"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+      - name: Check the tag
+        if: github.event_name == 'push'
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::The tag $GITHUB_REF_NAME does not match the version $version in package.json."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/$DEFAULT_BRANCH"; then
+            echo "::error::The tag $GITHUB_REF_NAME is not on $DEFAULT_BRANCH."
+            exit 1
+          fi
+
+      - name: Publish
+        if: github.event_name == 'push'
+        run: npm publish
+
+      - name: Check the trusted publisher without publishing
+        if: github.event_name == 'workflow_dispatch'
+        # Asks npm for a publish token the same way npm publish does, and only reports the result.
+        run: |
+          npm publish --dry-run
+          name=$(node -p "require('./package.json').name.replace('/', '%2f')")
+          id_token=$(curl -sSf -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | jq -r '.value')
+          code=$(curl -sS -o exchange.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $id_token" \
+            "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/$name")
+          if [ "$code" -ge 200 ] && [ "$code" -lt 300 ] && jq -e '.token' exchange.json > /dev/null; then
+            echo "Trusted publisher works: npm accepted this workflow for $name."
+          else
+            echo "::error::npm refused the token exchange (HTTP $code): $(jq -r '.message // .error // "no message"' exchange.json)"
+            rm -f exchange.json
+            exit 1
+          fi
+          rm -f exchange.json
