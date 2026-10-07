@@ -120,6 +120,31 @@ describe('a choice through the player and lazy loading', () => {
 });
 
 describe('play() that waits for the video', () => {
+    it.each([
+        ['lazy', () => {
+            fakeIntersectionObserver();
+            return { lazy: true };
+        }],
+        ['respectReducedMotion', () => {
+            fakeReducedMotion(true);
+            return { respectReducedMotion: true };
+        }],
+    ])('resolves when the browser blocks playback (%s)', async (name, setup) => {
+        const blocked = new DOMException('play() failed', 'NotAllowedError');
+        HTMLMediaElement.prototype.play.mockImplementation(() => Promise.reject(blocked));
+        const wrapper = mountBackground(setup());
+        let resolved = false;
+
+        wrapper.vm.player.play().then(() => {
+            resolved = true;
+        });
+        await flushPromises();
+        await makeReady(wrapper);
+
+        expect(wrapper.emitted('error')).toEqual([[blocked]]);
+        expect(resolved).toBe(true);
+    });
+
     it('resolves when the window switches to a source with only a poster', async () => {
         vi.useFakeTimers();
         fakeIntersectionObserver();

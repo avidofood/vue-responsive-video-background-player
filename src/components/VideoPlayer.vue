@@ -173,10 +173,7 @@ export default {
                     this.hide();
                     this.$emit('error', error);
                 })
-                .then(() => {
-                    // An obsolete request must not end the wait of a newer play()
-                    if (request === this.playRequest) this.resolveWaitingPlays();
-                });
+                .then(() => this.resolveWaitingPlays());
         },
         show() {
             this.showVideo = true;
