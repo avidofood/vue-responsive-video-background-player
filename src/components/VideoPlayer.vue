@@ -67,6 +67,7 @@ export default {
     methods: {
         pause() {
             if (this.$refs.video) {
+                this.cancelPlayRequest();
                 this.$refs.video.pause();
                 this.$emit('paused');
             }
@@ -89,12 +90,12 @@ export default {
         },
         play() {
             this.setPlaybackRate();
-            this.playRequest = (this.playRequest || 0) + 1;
+            this.cancelPlayRequest();
             const request = this.playRequest;
             // Old browsers return nothing instead of a promise
             return Promise.resolve(this.$refs.video.play())
                 .then(() => {
-                    // hide() or a newer play() made this request obsolete
+                    // pause(), hide() or a newer play() made this request obsolete
                     if (request !== this.playRequest) return;
                     this.show();
                     this.$emit('playing');
@@ -113,9 +114,12 @@ export default {
             this.showVideo = true;
         },
         hide() {
-            // A play() that is still pending must not show the video again
-            this.playRequest = (this.playRequest || 0) + 1;
+            this.cancelPlayRequest();
             this.showVideo = false;
+        },
+        // A play() that is still pending must not show the video or emit playing afterwards
+        cancelPlayRequest() {
+            this.playRequest = (this.playRequest || 0) + 1;
         },
         getMediaType(src) {
             const extension = src.split(/[?#]/)[0].split('.').pop().toLowerCase();

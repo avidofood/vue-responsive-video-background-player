@@ -110,6 +110,24 @@ describe('autoplay blocked by the browser', () => {
         wrapper.unmount();
     });
 
+    it.each(['pause', 'stop'])('does not show the video when %s() comes before play() resolved', async (method) => {
+        let resolvePlay;
+        HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve) => {
+            resolvePlay = resolve;
+        }));
+        const wrapper = mountBackground({ autoplay: false });
+        await makeReady(wrapper);
+
+        wrapper.vm.player.play();
+        wrapper.vm.player[method]();
+        resolvePlay();
+        await flushPromises();
+
+        expect(videoIsShown(wrapper)).toBe(false);
+        expect(wrapper.emitted('playing')).toBeUndefined();
+        expect(wrapper.emitted('paused')).toHaveLength(1);
+    });
+
     it('emits playing only after play() resolved', async () => {
         let resolvePlay;
         HTMLMediaElement.prototype.play.mockImplementation(() => new Promise((resolve) => {
