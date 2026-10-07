@@ -84,7 +84,7 @@ export interface VideoBackgroundPlayer {
     readonly video: HTMLVideoElement;
     /**
      * Plays the video. The promise resolves when the video plays or the browser blocks it.
-     * A video that waits (lazy, respectReducedMotion) loads first.
+     * A video that waits (lazy, respectReducedMotion) or that failed to load loads first.
      */
     play(): Promise<void>;
     pause(): void;

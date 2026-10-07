@@ -42,7 +42,7 @@ const mediaTypes = {
 
 export default {
     props,
-    emits: ['playing', 'paused', 'error', 'loading', 'ended', 'ready', 'request'],
+    emits: ['playing', 'paused', 'error', 'loading', 'ended', 'ready', 'intent'],
     data() {
         return {
             showVideo: false,
@@ -75,9 +75,14 @@ export default {
     },
     watch: {
         src(newSrc, oldSrc) {
+            // A play() that waited for the old video cannot play it any more
+            if (oldSrc) this.resolveWaitingPlays();
             // The first source after server-side rendering or lazy loading. The browser loads a
-            // newly added <source> by itself, because the video has no source yet. hls.js does not
-            if (!oldSrc) {
+            // newly added <source> by itself, because the video has no source yet. hls.js does not.
+            // While load() still waits, it loads the source instead
+            if (!oldSrc && !this.loadTimer) {
+                this.isReady = false;
+                this.failed = false;
                 if (this.usesHls) this.attachHls();
                 return;
             }
@@ -89,13 +94,32 @@ export default {
         },
     },
     methods: {
+        // play(), pause() and stop() are for you. They tell the background what you want, so
+        // that autoplay, pauseWhenHidden and the pause button follow it for the current video.
+        // The background itself uses startVideo() and pauseVideo()
+        play() {
+            if (!this.src || this.failed) {
+                // The video waits, for example for lazy loading, or it failed. The background
+                // loads it and plays it when it is ready. The promise waits for that
+                const waiting = this.waitForPlay();
+                this.$emit('intent', 'play');
+                if (this.failed) this.reloadAfterFailure();
+                return waiting;
+            }
+            this.$emit('intent', 'play');
+            return this.startVideo();
+        },
         pause() {
             if (this.$refs.video) {
-                this.cancelPlayRequest();
-                this.resolveWaitingPlays();
-                this.$refs.video.pause();
-                this.$emit('paused');
+                this.$emit('intent', 'pause');
+                this.pauseVideo();
             }
+        },
+        pauseVideo() {
+            this.cancelPlayRequest();
+            this.resolveWaitingPlays();
+            this.$refs.video.pause();
+            this.$emit('paused');
         },
         stop() {
             if (this.$refs.video) {
@@ -108,7 +132,9 @@ export default {
             clearTimeout(this.loadTimer);
             // ugly, but we want to give hide 1 sec pause until we load the next video
             this.loadTimer = setTimeout(() => {
+                this.loadTimer = null;
                 this.isReady = false;
+                this.failed = false;
                 if (this.usesHls) {
                     this.attachHls();
                 } else if (this.hlsAttached) {
@@ -121,14 +147,11 @@ export default {
                 this.$emit('loading');
             }, 1000);
         },
-        play() {
-            if (!this.src) {
-                // The background holds the video back, for example for lazy loading. It loads the
-                // video now and plays it when it is ready. The promise waits for that
-                return new Promise((resolve) => {
-                    this.waitingPlays = [...(this.waitingPlays || []), resolve];
-                    this.$emit('request');
-                });
+        startVideo() {
+            if (this.failed) {
+                const waiting = this.waitForPlay();
+                this.reloadAfterFailure();
+                return waiting;
             }
             this.setPlaybackRate();
             this.cancelPlayRequest();
@@ -163,30 +186,51 @@ export default {
         cancelPlayRequest() {
             this.playRequest = (this.playRequest || 0) + 1;
         },
+        waitForPlay() {
+            return new Promise((resolve) => {
+                this.waitingPlays = [...(this.waitingPlays || []), resolve];
+            });
+        },
         // Ends the promises of play() calls that waited for the video
         resolveWaitingPlays() {
             const waiting = this.waitingPlays || [];
             this.waitingPlays = [];
             waiting.forEach((resolve) => resolve());
         },
+        // After a failed video or a fatal hls.js error, a new play request loads the video again
+        reloadAfterFailure() {
+            if (!this.failed || !this.src) return;
+            this.failed = false;
+            this.isReady = false;
+            if (this.usesHls) {
+                this.attachHls();
+            } else {
+                this.$refs.video.load();
+            }
+            this.$emit('loading');
+        },
         attachHls() {
             this.destroyHls();
             const Hls = this.hls;
             // hls.js gets your object, not the reactive proxy of Vue
             const hls = new Hls(this.hlsConfig && toRaw(this.hlsConfig));
+            // Before loadSource(), because hls.js can report an error inside it
+            this.hlsPlayer = hls;
+            this.hlsAttached = true;
             hls.on(Hls.Events.ERROR, (event, data) => {
                 // hls.js handles the other errors itself
                 if (!data.fatal || hls !== this.hlsPlayer) return;
                 this.destroyHls();
                 this.hide();
+                this.failed = true;
                 this.resolveWaitingPlays();
                 // A CustomEvent, so that error always gets an Event. detail has the data of hls.js
                 this.$emit('error', new CustomEvent('error', { detail: data }));
             });
             hls.loadSource(this.src);
+            // A fatal error inside loadSource() already destroyed this instance
+            if (hls !== this.hlsPlayer) return;
             hls.attachMedia(this.$refs.video);
-            this.hlsPlayer = hls;
-            this.hlsAttached = true;
         },
         destroyHls() {
             if (!this.hlsPlayer) return;
@@ -216,6 +260,7 @@ export default {
             this.$emit('ready');
         },
         videoError(event) {
+            this.failed = true;
             this.resolveWaitingPlays();
             this.$emit('error', event);
         },

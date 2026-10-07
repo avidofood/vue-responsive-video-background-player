@@ -186,6 +186,18 @@ describe('lazy', () => {
         expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
     });
 
+    it('loads the video when lazy is turned off', async () => {
+        const observers = fakeIntersectionObserver();
+        const wrapper = mountBackground({ lazy: true });
+        expect(sourceOf(wrapper).exists()).toBe(false);
+
+        await wrapper.setProps({ lazy: false });
+        await flushPromises();
+
+        expect(sourceOf(wrapper).attributes('src')).toBe('/videos/desktop.mp4');
+        expect(onlyObserver(observers).disconnected).toBe(true);
+    });
+
     it('loads the video right away when the browser has no IntersectionObserver', async () => {
         vi.stubGlobal('IntersectionObserver', undefined);
 

@@ -302,6 +302,7 @@ The button:
 - comes before your content, so it is first in the tab order inside the section
 - changes its label between `pauseLabel` and `playLabel`
 - shows "play" when the browser blocked autoplay, for example on iOS in Low Power Mode. A tap on it then starts the video
+- shows "play" when the video failed to load. A tap on it loads the video again
 - keeps the video paused when the window switches to another source
 
 The button sits in the bottom right corner. Its styles use the selector `button.videobg-pause-button`, so CSS resets of Bootstrap or Tailwind do not change them. A selector with two classes overrides them, for example with a class on the component:
@@ -408,13 +409,15 @@ Use the file in two cases:
 
 If you happen to need more control over the player, you can use the internal methods. For that, you need to set `ref=videobackground` to the HTML tag `<video-background>`. After that you can call all methods like this `this.$refs.videobackground.player.play()`.
 
-- `play()`: Plays the video and returns a promise. The promise resolves after playback starts or after the browser blocks it. If the video waits because of `lazy` or `respectReducedMotion`, `play()` loads it first.
+- `play()`: Plays the video and returns a promise. The promise resolves after playback starts or after the browser blocks it. If the video waits because of `lazy` or `respectReducedMotion`, or if it failed to load, `play()` loads it first.
 - `pause()`: Pauses the video
 - `stop()`: Pauses the video and goes back to the start. Call `play()` to start it again.
 - `show()`: Shows the video
 - `hide()`: Hides the video and shows the poster
 - `load()`: Hides the video and loads it again after one second
 - `video`: The `<video>` element, for example `this.$refs.videobackground.player.video`
+
+`play()`, `pause()` and `stop()` count for the current video, also before it is ready. If the window switches to another source, the autoplay of that source decides again. A choice with the pause button stays.
  
 ## Development
 

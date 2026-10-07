@@ -27,9 +27,9 @@
             @playing="videoPlaying"
             @paused="videoPaused"
             @error="videoError"
-            @loading="$emit('loading')"
+            @loading="videoLoading"
             @ended="videoEnded"
-            @request="videoRequested"
+            @intent="videoIntent"
         />
 
         <video-overlay
@@ -97,9 +97,12 @@ export default {
         return {
             // The video plays, or it starts by itself soon. The pause button shows this state
             running: this.autoplay,
-            // 'play' or 'pause' after the pause button, or 'play' after play() while the video
-            // waited. Without a choice, the autoplay of the source decides
+            // 'play' or 'pause' from the pause button, or from play(), pause() and stop() of the
+            // player. Without a choice, the autoplay of the source decides
             choice: null,
+            // A choice of the pause button stays when the window switches to another source.
+            // A choice through the player counts only for the current video, as before 2.6
+            choiceStays: false,
             // The video of the current source is ready to play
             videoReady: false,
             // pauseWhenHidden paused the video. It plays again when it is visible
@@ -118,8 +121,10 @@ export default {
         },
     },
     watch: {
-        videoSrc() {
+        videoSrc(newSrc, oldSrc) {
             this.videoReady = false;
+            // Another video: a choice through the player was for the old one
+            if (oldSrc && !this.choiceStays) this.choice = null;
         },
         visible(visible) {
             if (visible) {
@@ -139,7 +144,7 @@ export default {
             if (this.choice === 'play' || !this.running) return;
             this.running = false;
             this.suspended = false;
-            if (this.videoReady) this.player.pause();
+            if (this.videoReady) this.player.pauseVideo();
         },
     },
     beforeMount() {
@@ -181,12 +186,11 @@ export default {
                 this.suspended = true;
                 return;
             }
-            this.player.play();
+            this.player.startVideo();
         },
         videoPlaying() {
             this.running = true;
             this.suspended = false;
-            if (this.choice === 'pause') this.choice = null;
             this.$emit('playing');
         },
         videoPaused() {
@@ -194,9 +198,12 @@ export default {
             if (!this.suspending) {
                 this.running = false;
                 this.suspended = false;
-                if (this.choice === 'play') this.choice = null;
             }
             this.$emit('paused');
+        },
+        videoLoading() {
+            this.videoReady = false;
+            this.$emit('loading');
         },
         videoError(reason) {
             this.running = false;
@@ -207,14 +214,23 @@ export default {
             this.running = false;
             this.$emit('ended');
         },
-        // play() while the video waits
-        videoRequested() {
+        // play(), pause() or stop() of the player
+        videoIntent(intent) {
+            this.choice = intent;
+            this.choiceStays = false;
+            if (intent === 'pause') {
+                this.running = false;
+                this.suspended = false;
+                return;
+            }
             if (!this.current.src) {
                 // This source has only a poster
                 this.player.resolveWaitingPlays();
                 return;
             }
-            this.startPlayback();
+            this.running = true;
+            this.heldBack = false;
+            this.nearViewport = true;
         },
         togglePlayback() {
             if (!this.running) {
@@ -222,30 +238,36 @@ export default {
                 return;
             }
             this.choice = 'pause';
+            this.choiceStays = true;
             this.running = false;
             this.suspended = false;
             // This also cancels a play() that is still pending
-            this.player.pause();
+            this.player.pauseVideo();
         },
         startPlayback() {
             this.choice = 'play';
+            this.choiceStays = true;
             this.running = true;
             this.heldBack = false;
             this.nearViewport = true;
-            // Before the video is ready, the ready event plays it
-            if (this.videoReady) this.player.play();
+            if (this.videoReady) {
+                this.player.startVideo();
+            } else {
+                // A failed video loads again. Otherwise, the ready event plays it
+                this.player.reloadAfterFailure();
+            }
         },
         suspend() {
             if (this.suspended || !this.running || !this.videoReady) return;
             this.suspending = true;
-            this.player.pause();
+            this.player.pauseVideo();
             this.suspending = false;
             this.suspended = true;
         },
         resume() {
             if (!this.suspended) return;
             this.suspended = false;
-            if (this.videoReady) this.player.play();
+            if (this.videoReady) this.player.startVideo();
         },
     },
 };

@@ -91,6 +91,7 @@ describe('respectReducedMotion', () => {
         await makeReady(wrapper);
 
         motion.change(false);
+        await flushPromises();
         motion.change(true);
         await flushPromises();
 

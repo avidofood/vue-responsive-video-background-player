@@ -21,6 +21,10 @@ export default {
         nearViewport(near) {
             if (near) this._stopLazyObserver();
         },
+        lazy(on) {
+            // Without lazy, the video loads right away. Turning lazy on later changes nothing
+            if (!on) this.nearViewport = true;
+        },
         pauseWhenHidden(on) {
             if (on) {
                 this._observeVisibility();

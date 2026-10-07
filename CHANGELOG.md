@@ -17,12 +17,19 @@ All new options are off by default. Without them, the component works as in 2.5.
 - `player.video`: the `<video>` element ([#30](https://github.com/avidofood/vue-responsive-video-background-player/issues/30)).
 - `vue-responsive-video-background-player/style.css`: the CSS as a file, for server-side rendering and for a strict Content Security Policy. The JavaScript still injects the CSS. A type declaration comes with the file, because TypeScript 6 checks side-effect imports.
 - `play()` on a video that waits because of `lazy` or `respectReducedMotion` loads it first. Its promise resolves when the video plays.
+- `play()` and the pause button load a video again that failed to load, for example after a fatal hls.js error.
+
+### Fixed
+
+- `pause()` and `stop()` before the video is ready keep it paused. Before, autoplay started it when it was ready. After a switch to another source, the autoplay of that source decides again, as before.
+- `play()` before the video is ready plays it when it is ready, also with `autoplay` set to false. Before, the video stayed paused.
 
 ### Changed
 
 - The README shows how to show only the poster on small screens: a source with an empty `src` loads no video.
 - The tests unmount every component after each test.
-- The ESM file grows from 9.9 kB to 18 kB (gzip: from 3.4 kB to 5.5 kB).
+- The ESM file grows from 9.9 kB to 19 kB (gzip: from 3.4 kB to 5.7 kB).
+- An independent review by Codex (gpt-6-astra) found seven problems in the new code before the release. They are fixed and have tests.
 
 ## 2.5.1
 
