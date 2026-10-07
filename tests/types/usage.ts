@@ -1,7 +1,9 @@
 // Compile-time checks for src/index.d.ts. Run with: npm run test:types
 import { createApp, h, type GlobalComponents } from 'vue';
+import Hls from 'hls.js';
 import VideoBackground, {
     Plugin,
+    type VideoBackgroundHls,
     type VideoBackgroundPlayer,
     type VideoBackgroundProps,
     type VideoBackgroundSource,
@@ -28,6 +30,20 @@ h(VideoBackground, {
     onError: (reason: Event | DOMException) => reason,
 });
 
+// hls.js
+h(VideoBackground, {
+    src: '/videos/hero.m3u8',
+    hls: Hls,
+    hlsConfig: { capLevelToPlayerSize: true },
+});
+
+// The Hls class of hls.js fits the type
+const hlsClass: VideoBackgroundHls = Hls;
+const options: VideoBackgroundProps = { src: '/videos/hero.m3u8', hls: Hls, hlsConfig: Hls.DefaultConfig };
+
+// @ts-expect-error hls needs the Hls class, not an instance
+h(VideoBackground, { src: '/videos/hero.m3u8', hls: new Hls() });
+
 // @ts-expect-error src is required
 h(VideoBackground, { poster: '/images/poster.jpg' });
 
@@ -51,5 +67,5 @@ player.load();
 const global: typeof VideoBackground = {} as GlobalComponents['VideoBackground'];
 
 export {
-    incomplete, played, global, video,
+    incomplete, played, global, hlsClass, options, video,
 };

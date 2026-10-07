@@ -73,6 +73,7 @@
     "@vue/test-utils": "^2.5.1",
     "eslint": "^9.39.5",
     "eslint-config-avidofood": "^4.0.0",
+    "hls.js": "^1.7.3",
     "jsdom": "^29.1.1",
     "typescript": "^5.9.3",
     "vite": "^8.3.3",

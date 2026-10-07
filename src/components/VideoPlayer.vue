@@ -14,7 +14,7 @@
                 :style="styleObject"
             >
                 <source
-                    v-if="src"
+                    v-if="src && !usesHls && !hlsAttached"
                     :src="src"
                     :type="getMediaType(src)"
                     @error="videoError"
@@ -25,7 +25,10 @@
 </template>
 
 <script>
+import { toRaw } from 'vue';
 import props from '../core/playerProps';
+
+const hlsType = 'application/vnd.apple.mpegurl';
 
 // Only well-known types. Without a type attribute the browser checks the file itself
 const mediaTypes = {
@@ -34,7 +37,7 @@ const mediaTypes = {
     webm: 'video/webm',
     ogv: 'video/ogg',
     ogg: 'video/ogg',
-    m3u8: 'application/vnd.apple.mpegurl',
+    m3u8: hlsType,
 };
 
 export default {
@@ -43,6 +46,8 @@ export default {
     data() {
         return {
             showVideo: false,
+            // hls.js removes all <source> elements when it detaches. Ours comes back after that
+            hlsAttached: false,
         };
     },
     computed: {
@@ -59,13 +64,28 @@ export default {
         video() {
             return this.$refs.video;
         },
+        // hls.js plays an HLS stream if it gets the Hls class and the browser has Media Source
+        // Extensions. Otherwise the browser plays the stream itself, for example on older iPhones
+        usesHls() {
+            return !!this.src
+                && !!this.hls
+                && this.getMediaType(this.src) === hlsType
+                && this.hls.isSupported();
+        },
     },
     watch: {
         src(newSrc, oldSrc) {
             // The first source after server-side rendering. The browser loads a newly added
-            // <source> by itself, because the video has no source yet
-            if (!oldSrc) return;
+            // <source> by itself, because the video has no source yet. hls.js does not
+            if (!oldSrc) {
+                if (this.usesHls) this.attachHls();
+                return;
+            }
             this.load();
+        },
+        hls() {
+            // For example, hls.js arrived later through a dynamic import
+            if (this.src && this.getMediaType(this.src) === hlsType) this.load();
         },
     },
     methods: {
@@ -88,7 +108,15 @@ export default {
             // ugly, but we want to give hide 1 sec pause until we load the next video
             this.loadTimer = setTimeout(() => {
                 this.isReady = false;
-                this.$refs.video.load();
+                if (this.usesHls) {
+                    this.attachHls();
+                } else if (this.hlsAttached) {
+                    this.destroyHls();
+                    // The <source> comes back with the next render
+                    this.$nextTick(() => this.$refs.video && this.$refs.video.load());
+                } else {
+                    this.$refs.video.load();
+                }
                 this.$emit('loading');
             }, 1000);
         },
@@ -124,6 +152,30 @@ export default {
         // A play() that is still pending must not show the video or emit playing afterwards
         cancelPlayRequest() {
             this.playRequest = (this.playRequest || 0) + 1;
+        },
+        attachHls() {
+            this.destroyHls();
+            const Hls = this.hls;
+            // hls.js gets your object, not the reactive proxy of Vue
+            const hls = new Hls(this.hlsConfig && toRaw(this.hlsConfig));
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                // hls.js handles the other errors itself
+                if (!data.fatal || hls !== this.hlsPlayer) return;
+                this.destroyHls();
+                this.hide();
+                // A CustomEvent, so that error always gets an Event. detail has the data of hls.js
+                this.$emit('error', new CustomEvent('error', { detail: data }));
+            });
+            hls.loadSource(this.src);
+            hls.attachMedia(this.$refs.video);
+            this.hlsPlayer = hls;
+            this.hlsAttached = true;
+        },
+        destroyHls() {
+            if (!this.hlsPlayer) return;
+            this.hlsPlayer.destroy();
+            this.hlsPlayer = null;
+            this.hlsAttached = false;
         },
         getMediaType(src) {
             const extension = src.split(/[?#]/)[0].split('.').pop().toLowerCase();
@@ -163,9 +215,12 @@ export default {
             this.$refs.video.onerror = this.videoError;
             this.$refs.video.onended = this.videoEnded;
         }
+        // A client-only app has the source from the first render on
+        if (this.usesHls) this.attachHls();
     },
     beforeUnmount() {
         clearTimeout(this.loadTimer);
+        this.destroyHls();
     },
 };
 </script>

@@ -21,6 +21,8 @@
             :transition="transition"
             :object-fit="objectFit"
             :object-position="objectPosition"
+            :hls="hls"
+            :hls-config="hlsConfig"
             @ready="playVideo"
             @playing="$emit('playing')"
             @paused="$emit('paused')"
