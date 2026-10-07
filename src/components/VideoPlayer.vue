@@ -55,6 +55,10 @@ export default {
                 objectPosition: this.objectPosition,
             };
         },
+        // The <video> element, after the component mounted
+        video() {
+            return this.$refs.video;
+        },
     },
     watch: {
         src(newSrc, oldSrc) {

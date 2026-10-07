@@ -161,6 +161,15 @@ describe('playback', () => {
     });
 });
 
+describe('player.video', () => {
+    it('is the video element', () => {
+        const wrapper = mountBackground();
+
+        expect(wrapper.vm.player.video).toBe(videoOf(wrapper));
+        expect(wrapper.vm.player.video).toBeInstanceOf(HTMLVideoElement);
+    });
+});
+
 describe('stop()', () => {
     it('pauses the video and goes back to the start (#30)', async () => {
         const wrapper = mountBackground();

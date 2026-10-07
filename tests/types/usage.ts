@@ -40,6 +40,7 @@ const incomplete: VideoBackgroundSource = { src: '/videos/mobile.mp4', autoplay:
 declare const instance: InstanceType<typeof VideoBackground>;
 const player: VideoBackgroundPlayer = instance.player;
 const played: Promise<void> = player.play();
+const video: HTMLVideoElement = player.video;
 player.pause();
 player.stop();
 player.show();
@@ -50,5 +51,5 @@ player.load();
 const global: typeof VideoBackground = {} as GlobalComponents['VideoBackground'];
 
 export {
-    incomplete, played, global,
+    incomplete, played, global, video,
 };

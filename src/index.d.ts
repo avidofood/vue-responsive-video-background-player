@@ -47,6 +47,8 @@ export interface VideoBackgroundProps {
 
 /** The internal player. Get it from the `player` property of the component. */
 export interface VideoBackgroundPlayer {
+    /** The `<video>` element. */
+    readonly video: HTMLVideoElement;
     /** Plays the video. The promise resolves when the video plays or the browser blocks it. */
     play(): Promise<void>;
     pause(): void;
