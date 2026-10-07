@@ -1,4 +1,8 @@
 import { afterEach, beforeEach, vi } from 'vitest';
+import { enableAutoUnmount } from '@vue/test-utils';
+
+// Components of earlier tests must not react to window and document events
+enableAutoUnmount(afterEach);
 
 // jsdom has no media playback. These stubs stand in for the browser.
 beforeEach(() => {
@@ -12,5 +16,6 @@ beforeEach(() => {
 
 afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
 });
