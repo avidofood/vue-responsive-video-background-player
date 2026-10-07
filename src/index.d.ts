@@ -70,6 +70,8 @@ export interface VideoBackgroundProps {
     pauseWhenHidden?: boolean;
     /** Loads the video when the section comes near the viewport. Default: false. */
     lazy?: boolean;
+    /** Keeps a larger video that already loads when the window gets smaller. Default: false. */
+    keepLargerSource?: boolean;
     /** The Hls class of hls.js. With it, HLS streams play in browsers without native HLS. */
     hls?: VideoBackgroundHls | null;
     /** Options for `new Hls()`. */
@@ -134,6 +136,7 @@ type VideoBackgroundPropOptions = {
     respectReducedMotion: { type: PropType<boolean>; default: boolean };
     pauseWhenHidden: { type: PropType<boolean>; default: boolean };
     lazy: { type: PropType<boolean>; default: boolean };
+    keepLargerSource: { type: PropType<boolean>; default: boolean };
     hls: { type: PropType<VideoBackgroundHls | null>; default: null };
     hlsConfig: { type: PropType<object> };
 };

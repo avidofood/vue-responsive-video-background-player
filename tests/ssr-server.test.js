@@ -48,6 +48,7 @@ describe('server-side rendering of the 2.6 options', () => {
             respectReducedMotion: true,
             pauseWhenHidden: true,
             lazy: true,
+            keepLargerSource: true,
             hls: Hls,
             src: '/videos/hero.m3u8',
         });

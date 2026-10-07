@@ -36,7 +36,10 @@ export default {
     },
     methods: {
         _change_video_resolution() {
-            this.width = this._innerWidth();
+            const width = this._innerWidth();
+            // keepLargerSource: a smaller window keeps a video that already loads (#14)
+            const keep = this.keepLargerSource && this.videoSrc;
+            this.width = keep ? Math.max(this.width, width) : width;
             this.measured = true;
         },
         _innerWidth() {

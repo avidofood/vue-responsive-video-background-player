@@ -91,5 +91,10 @@ export default {
         type: Boolean,
         default: false,
     },
+    // A smaller window keeps the larger video that already loads
+    keepLargerSource: {
+        type: Boolean,
+        default: false,
+    },
     ...playerProps,
 };

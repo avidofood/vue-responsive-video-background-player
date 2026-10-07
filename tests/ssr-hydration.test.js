@@ -132,7 +132,7 @@ describe('hydration with the 2.6 options', () => {
         window.innerWidth = 1200;
 
         const container = await hydrateWith({
-            respectReducedMotion: true, pauseWhenHidden: true, lazy: true,
+            respectReducedMotion: true, pauseWhenHidden: true, lazy: true, keepLargerSource: true,
         });
 
         const messages = [...warn.mock.calls, ...error.mock.calls].flat().join('\n');

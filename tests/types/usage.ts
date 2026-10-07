@@ -39,6 +39,7 @@ h(VideoBackground, {
     respectReducedMotion: true,
     pauseWhenHidden: true,
     lazy: true,
+    keepLargerSource: true,
     hls: Hls,
     hlsConfig: { capLevelToPlayerSize: true },
 });
