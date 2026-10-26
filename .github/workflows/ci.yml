@@ -13,14 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # jsdom 30 needs Node.js ^22.22.2, ^24.15.0 or >=26. setup-node installs the newest release
-        # of each line
+        # jsdom 30 needs Node.js ^22.22.2, ^24.15.0 or >=26. With check-latest, setup-node uses the
+        # newest release of each line, also when the runner has an older one in its cache
         node: [22, 24, 26]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
+          check-latest: true
           cache: npm
       - run: npm ci
       - run: npm run lint

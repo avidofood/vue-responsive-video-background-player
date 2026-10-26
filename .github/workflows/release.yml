@@ -41,9 +41,10 @@ jobs:
             exit 1
           fi
 
+      # jsdom 30, which the tests use, needs Node.js 24.15.0 or newer on the 24 line
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: '>=24.15.0 <25'
           package-manager-cache: false
 
       - run: npm ci
@@ -84,7 +85,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: '>=24.15.0 <25'
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
