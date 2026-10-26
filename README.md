@@ -1,4 +1,4 @@
-# Responsive Video Background Player for Vue 2 & 3 ⚡️
+# Responsive Video Background Player for Vue 3 ⚡️
 
 <a href="https://www.npmjs.com/package/vue-responsive-video-background-player">
   <img src="https://img.shields.io/npm/dt/vue-responsive-video-background-player.svg" alt="Downloads">
@@ -14,17 +14,13 @@
 
 **If you are looking to play videos in the background, you've found the right Vue package! 😜 (Heads up: No YouTube videos... yet!)**
 
- >**Prerequisites**: Vue 3.2 or newer for version 2.x of this package. For Vue 2, use version 1.x.
+ >**Prerequisites**: Vue 3.2 or newer. For Vue 2 and Nuxt 2, use version 1.x with `npm install vue-responsive-video-background-player@1x`. Its documentation is on the [`1x` branch](https://github.com/avidofood/vue-responsive-video-background-player/tree/1x#readme).
 
 ## Installation in 2 Steps
 
 ### 1: Add with npm 💻
 ```bash
-# For Vue 3.x.x
 npm install vue-responsive-video-background-player
-
-# For Vue 2.x.x
-npm install vue-responsive-video-background-player@1x
 ```
 
 ### 2a: Import the component
@@ -90,22 +86,6 @@ If you prefer to render the component only in the browser, name the plugin file 
 
 A `.client` plugin alone is not enough: the server cannot resolve the component, and Vue reports a hydration mismatch.
 
-#### Nuxt 2 (package version 1.x)
- >Thanks to [@skoulix](https://github.com/avidofood/vue-responsive-video-background-player/issues/8#issuecomment-654821213) for his instructions:
-
-  Again this is only for Nuxt.js users. Gridsome users click [here](https://gridsome.org/docs/assets-scripts/#without-ssr-support). At your `nuxt.config.js` locate the part where you declare your plugins and import the file. Example:
-
-```
-plugins: [
-  {
-    src: '~/plugins/vue-video-background',
-    ssr: false
-  }
-]
-```
-
-Now the component is globally available and can be used at any .vue file without issues.
-
 ### TypeScript
 
 Since version 2.5.0 the package contains type declarations for the props, the events, the player methods and the plugin. If you added a `declare module 'vue-responsive-video-background-player'` file for older versions, you can delete it.
@@ -163,7 +143,7 @@ This package is for responsive videos depicting different video resolution. Have
 
 This is your path to your video. You can just use this value for showing your video in every resolution.
 
- >**Note** for Vite and Nuxt: Put the video in the `public` folder and use the path from the site root, for example `src="/videos/hero.mp4"`. Or import the file, for example `import heroVideo from '@/assets/hero.mp4'`, and bind it with `:src="heroVideo"`. With Vue CLI, bind it like this: ``:src="require(`@/assets/video/timelapse.mp4`)"``. [Read here why](https://github.com/avidofood/vue-responsive-video-background-player/issues/10#issuecomment-646959090)
+ >**Note** for Vite and Nuxt: Put the video in the `public` folder and use the path from the site root, for example `src="/videos/hero.mp4"`. Or import the file, for example `import heroVideo from '@/assets/hero.mp4'`, and bind it with `:src="heroVideo"`.
 
 The component sets the `type` attribute of the video for `.mp4`, `.m4v`, `.webm`, `.ogv`, `.ogg` and `.m3u8` files. For other URLs, for example a URL without a file extension, it sets no type, and the browser checks the file itself.
 
@@ -173,7 +153,7 @@ The component sets the `type` attribute of the video for `.mp4`, `.m4v`, `.webm`
 
 This is your first background image that is shown before the video is loaded.
 
- >**Note**: The same as for `src` applies. With Vue CLI, bind the image like this: ``:poster="require(`@/assets/img/logo.png`)"``.
+ >**Note**: The same as for `src` applies.
 
 - `sources` (default: `[]`)
 
